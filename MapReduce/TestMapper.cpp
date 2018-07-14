@@ -1,6 +1,6 @@
 #include "Mapper.h"
 #include "InputFormat.h"
-#include <string>
+#include "common.h"
 namespace mapreduce{
 using std::string;
 class TestMapper : public Mapper<int,string,int,string,TextFormat>{
