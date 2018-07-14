@@ -1,7 +1,12 @@
+
+//Context.h
+
+
 #ifndef MAPREDUCE_CONTEXT
 #define MAPREDUCE_CONTEXT 
-#include <list>
-#include <string>
+
+#include "common.h"
+
 namespace mapreduce {
 
 using std::list;
@@ -13,10 +18,18 @@ class Context {
   list<V> values;
   Context();
   virtual ~Context();
+
+  //write() method should add the new key and value into their lists
+  //map() and reduce() may call the method Context.write() to record their outputs
   virtual int write(K& key,V& value);
+  
+  //serialize two lists into a string
+  //check the size first
   virtual int serialize(string& result);
+
+  //deserialize two lists
   virtual int deserialize(string& input);
 };
 }
 
-#endif
+#endif //MAPREDUCE_CONTEXT
