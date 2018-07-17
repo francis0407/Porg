@@ -26,23 +26,34 @@ class Mapper {
   Mapper(string& split) : input(split){}
   virtual ~Mapper();
 
-  virtual int map(K1& key,V1& value) = 0;
+  virtual int map(const K1& key,const V1& value) = 0;
 
   virtual int run(list<K2>& key_res,list<list<V2>>& value_res){
     // for reference only 
     Format format(input);
-    int len = format.formatting(keys,values);
+    ASSERT(format.formatting(keys,values));
     while(!keys.empty() && !values.empty()){
-      map(keys.front(),values.front());
+      ASSERT(map(keys.front(),values.front()));
       keys.pop_front();
       values.pop_front();
     }
     
-    mapreduce::sort<K2,V2>(context.keys,context.values);
-    mapreduce::merge_value<K2,V2>(context.keys,context.values,key_res,value_res);
-
+    ASSERT(mapreduce::sort<K2,V2>(context.keys,context.values));
+    ASSERT(mapreduce::merge_value<K2,V2>(context.keys,context.values,key_res,value_res));
+    return 1;
   }
 
 };
 }
-#endif
+
+//register a mapper written by user
+#define REGISTER_MAPPER(M,K1,V1,K2,V2)\
+int doMapper(string& input,string& result,string& errorMessage,int partition_index[]) {\
+    Context<K2,list<V2>> context;\
+    M mapper(input);\
+    ADDERROR(mapper.run(context.keys,context.values) == 0);\
+    ADDERROR(mapreduce::partition<K2,V2,Hash>(context,result,partition_index) == 0);\
+    return 1;\
+} 
+
+#endif //MAPREDUCE_MAPPER
