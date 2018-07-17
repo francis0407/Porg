@@ -19,7 +19,7 @@ class ErrorMessage{
         message.push(s);
     }
     //return the size of error message
-    static int messageSize(){
+    static int messageSize(){   
         return message.size();
     }
     //convert error message(stack) to a string
@@ -42,4 +42,10 @@ class ErrorMessage{
         return 0;\
     }
 
+#define ADDERROR(A)\
+    if((A) == 0){\
+        ErrorMessage::append(#A);\
+        ErrorMessage::getMessage(errorMessage);
+        return 0;
+    }
 #endif //MAPREDUCE_COMMON
