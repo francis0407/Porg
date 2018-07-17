@@ -21,7 +21,7 @@ class Context {
 
   //write() method should add the new key and value into their lists
   //map() and reduce() may call the method Context.write() to record their outputs
-  virtual int write(K& key,V& value);
+  virtual int write(const K& key,const V& value);
   
   //serialize two lists into a string
   //check the size first
