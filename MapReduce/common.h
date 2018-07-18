@@ -10,6 +10,7 @@
 #include <list>
 #include <string>
 #include <stack>
+#include <sstream>
 
 //Using static member to record error message
 class ErrorMessage{
