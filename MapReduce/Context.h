@@ -16,9 +16,11 @@ class Context {
  public:
   list<K> keys;
   list<V> values;
+  
   Context();
   virtual ~Context();
 
+  virtual int clear();
   //write() method should add the new key and value into their lists
   //map() and reduce() may call the method Context.write() to record their outputs
   virtual int write(const K& key,const V& value);
@@ -28,7 +30,10 @@ class Context {
   virtual int serialize(string& result);
 
   //deserialize two lists
-  virtual int deserialize(string& input);
+  virtual int deserialize(string& result);
+  
+  virtual int serialize_list(string& result);
+  virtual int deserialize_list(string& result);
 };
 }
 

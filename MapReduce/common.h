@@ -46,7 +46,7 @@ class ErrorMessage{
 #define ADDERROR(A)\
     if((A) == 0){\
         ErrorMessage::append(#A);\
-        ErrorMessage::getMessage(errorMessage);
-        return 0;
+        ErrorMessage::getMessage(errorMessage);\
+        return 0;\
     }
 #endif //MAPREDUCE_COMMON
