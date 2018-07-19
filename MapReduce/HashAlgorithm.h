@@ -4,6 +4,9 @@
 #define MAPREDUCE_HASHALGORITHM
 #include "common.h"
 namespace mapreduce{
+    
+using std::string;
+using std::stringstream;
 
 //Abstract class for Hash
 //change keyvalue to int
