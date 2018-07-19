@@ -11,6 +11,18 @@ namespace mapreduce {
 
     using std::list;
     using std::string;
+
+    template<class K,class V>
+    class Context{
+        public:
+            list<K> keys;
+            list<V> values;
+            Context(){};
+            virtual ~Context(){};
+            virtual int clear(){keys.clear();values.clear();return 1;}
+            virtual int write(const K& key,const V& value){keys.push_back(key);values.push_back(value);return 1;}
+    };
+
     template<class K, class V>
     int serializeKVpair(const K &key, const V &value, string &result) {
         std::stringstream ss;

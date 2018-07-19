@@ -33,7 +33,7 @@ class ErrorMessage{
             message.pop();
         }
     }
-}
+};
 
 //if A == 0 then
 //log error message and return 0
