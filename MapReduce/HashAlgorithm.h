@@ -85,7 +85,7 @@ public:
         {
             hash = hash * 131 + ch;
         }
-        return hash % this->size;
+        return (hash % this->size) < 0 ? -(hash % this->size) : hash % this->size;
     }
 };
 

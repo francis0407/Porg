@@ -28,7 +28,7 @@ namespace mapreduce {
         std::stringstream ss;
         ss << key << " " << value;
         result = ss.str();
-        return 0;
+        return 1;
     }
 
     // deserialize a kv pair from SOURCE,
@@ -37,7 +37,7 @@ namespace mapreduce {
     int deserializeKVpair(K &key, V &value, string &source) {
         std::stringstream ss(source);
         ss >> key >> value;
-        return 0;
+        return 1;
     };
 
     // Format of serialization: key L1 L2 L3 ... Ln (separated by space)
@@ -49,7 +49,7 @@ namespace mapreduce {
             ss << e << " ";
         }
         result = ss.str();
-        return 0;
+        return 1;
     };
 
     template<class K, class V>
@@ -60,7 +60,7 @@ namespace mapreduce {
         while(ss >> v) {
             L.push_back(v);
         }
-        return 0;
+        return 1;
     };
 
 }

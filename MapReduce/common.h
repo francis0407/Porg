@@ -16,7 +16,7 @@
 class ErrorMessage{
   public:
     static std::stack<std::string> message;
-    static void append(std::string& s){
+    static void append(const std::string& s){
         message.push(s);
     }
     //return the size of error message

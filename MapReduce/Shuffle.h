@@ -4,6 +4,7 @@
 #include <list>
 #include <utility>
 #include <string>
+#include <iostream>
 #include "Context.h"
 #include "HashAlgorithm.h"
 #include "common.h"
@@ -43,7 +44,7 @@ int sort(list<K>& keys,list<V>& values) {
 
 //merge <K,V> to <K,list<V>>, merge by keys
 template<class K, class V>
-int merge_value(list<K>& keys, list<V>& values, list<K>& des_keys, list<list<V>>& des_values) {
+int merge_value(list<K>& keys, list<V>& values, list<K>& des_keys, list< list<V> >& des_values) {
 	K k;
 	list<V> v;
 	unsigned long long cnt;
@@ -75,7 +76,7 @@ int merge_value(list<K>& keys, list<V>& values, list<K>& des_keys, list<list<V>>
 
 //merge <K,list<V>> to <K,list<V>>
 template<class K,class V>
-int merge_list(list<K>& keys, list<list<V>>& values, list<K>& des_keys, list<list<V>>& des_values) {
+int merge_list(list<K>& keys, list< list<V> >& values, list<K>& des_keys, list< list<V> >& des_values) {
 	K k;
 	list<V> v;
 	unsigned long long cnt;
@@ -107,20 +108,21 @@ int merge_list(list<K>& keys, list<list<V>>& values, list<K>& des_keys, list<lis
 
 
 template<class K, class V, class Hash, int s>
-int partition(Context<K,V>& context, string& result, int index[]) {
-	list<pair<K, V>> buffer[s];
+int partition(Context<K,list<V> >& context, string& result, int index[]) {
+	list< pair<K, list<V> > > buffer[s];
 	Hash hash(s);
 	string str, buf;
 	auto j = context.values.begin();
-	for (auto i = context.keys.begin(); i != context.keys.end(); ++i, ++j)
+	for (auto i = context.keys.begin(); i != context.keys.end(); ++i, ++j){
 		buffer[hash.hash(*i)].push_back(make_pair(*i, *j));
+	}
 	result.clear();
 	for (int i = 0; i < s; ++i) {
 		buf.clear();
 		for (auto t = buffer[i].begin(); t != buffer[i].end(); ++t) {
-			auto k = *t.first;
-			auto v = *t.second;
-			serializeKVpair(k, v, str);
+			auto k = (*t).first;
+			auto v = (*t).second;
+			serializeKListPair<K,V>(k, v, str);
 			buf += str + '\t';
 		}
 		index[i] = result.length();
