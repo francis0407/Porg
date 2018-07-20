@@ -1,5 +1,5 @@
 #include "Mapper.h"
-//#include "Reducer.h"
+#include "Reducer.h"
 #include "common.h"
 namespace mapreduce{
 using std::string;
@@ -29,9 +29,13 @@ REGISTER_MAPPER(WordCountMapper,int,strint,string,int);
 
 class WordCountReducer : public Reducer<string,int,string,int>{
  public:
+  WordCountReducer(list<string>& k,list< list<int> >& v):Reducer(k,v){}
   int reduce(const string& key,const list<int>& value){
       //WordCount Reducer
-      this->context.write(key,values.size());
+      int count = 0;
+      for(auto iter = value.begin();iter !=value.end();iter++)
+          count+=*(iter);
+      this->context.write(key,count);
       return 1;
   }
 };

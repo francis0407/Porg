@@ -7,35 +7,9 @@
 #include "common.h"
 #include "InputFormat.h"
 #include "Shuffle.h"
-#include <iostream>
 namespace mapreduce {
 using std::list;
-template<class K,class V>
-void print_pair(list<K>& keys,list<V>& values){
-  int s = keys.size();
-  std::cout<<" size "<<s<<'\n';
-  for(int i=0;i<s;i++)
-  {
-    std::cout << keys.front() <<' ' <<values.front()<<'\n';
-    keys.push_back(keys.front());
-    values.push_back(values.front());
-    keys.pop_front();
-    values.pop_front();
-  }
-}
-template<class K,class V>
-void print_pair_list(list<K>& keys,list<list<V> >& values){
-  int s = keys.size();
-  std::cout<<"size"<<s<<'\n';
-  auto k = keys.begin();
-   for(auto v1=values.begin();k!=keys.end()&&v1!=values.end();k++,v1++){
-    std::cout<< *k <<',';
-    for(auto v2=v1->begin();v2!=v1->end();v2++){
-      std::cout<< *v2<<' ';
-    }
-    std::cout<<'\n';
-  }
-}
+
 // abstract class of Mapper
 // when initialize a mapper object,the object get a split of the file
 // run() will convert the input to (key,value) format, and call map()

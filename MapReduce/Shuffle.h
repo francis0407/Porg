@@ -1,10 +1,7 @@
 #ifndef MAPREDUCE_SHUFFLE
 #define MAPREDUCE_SHUFFLE
 
-#include <list>
-#include <utility>
-#include <string>
-#include <iostream>
+
 #include "Context.h"
 #include "HashAlgorithm.h"
 #include "common.h"
