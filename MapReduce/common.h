@@ -13,41 +13,52 @@
 #include <sstream>
 #include <utility>
 
+//if A == 0 then
+//log error message and return 0
+#define ASSERT(A)                 \
+    if ((A) == 0)                 \
+    {                             \
+        ErrorMessage::append(#A); \
+        return 0;                 \
+    }
+
+#define ADDERROR(A)                             \
+    if ((A) == 0)                               \
+    {                                           \
+        ErrorMessage::append(#A);               \
+        ErrorMessage::getMessage(errorMessage); \
+        return 0;                               \
+    }
+
+namespace mapreduce
+{
 //Using static member to record error message
-class ErrorMessage{
+class ErrorMessage
+{
   public:
     static std::stack<std::string> message;
-    static void append(const std::string& s){
+    static void append(const std::string &s)
+    {
         message.push(s);
     }
     //return the size of error message
-    static int messageSize(){   
+    static int messageSize()
+    {
         return message.size();
     }
     //convert error message(stack) to a string
-    static void getMessage(std::string& s){
-        if(message.empty())
+    static void getMessage(std::string &s)
+    {
+        if (message.empty())
             return;
-        while(!message.empty()){
+        while (!message.empty())
+        {
             s.append(message.top());
-            s.append(1,'\n');
+            s.append(1, '\n');
             message.pop();
         }
     }
 };
+} // namespace mapreduce
 
-//if A == 0 then
-//log error message and return 0
-#define ASSERT(A)\
-    if((A) == 0){\
-        ErrorMessage::append(#A);\
-        return 0;\
-    }
-
-#define ADDERROR(A)\
-    if((A) == 0){\
-        ErrorMessage::append(#A);\
-        ErrorMessage::getMessage(errorMessage);\
-        return 0;\
-    }
 #endif //MAPREDUCE_COMMON
