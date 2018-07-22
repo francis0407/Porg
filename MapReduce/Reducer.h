@@ -3,7 +3,6 @@
 
 #ifndef MAPREDUCE_REDUCER
 #define MAPREDUCE_REDUCER
-
 #include "Context.h"
 #include "common.h"
 
@@ -40,6 +39,7 @@
     }                                                                                                              \
     return 1;                                                                                                      \
   }
+
 namespace mapreduce
 {
 
@@ -55,7 +55,17 @@ public:
   Reducer(list<K1> &k, list<list<V1>> &v) : keys(k), values(v){};
   virtual ~Reducer(){};
   virtual int reduce(const K1 &key, const list<V1> &value) = 0;
-  int run();
+  int run()
+  {
+    //for reference only
+    while (!keys.empty() && !values.empty())
+    {
+      ASSERT((reduce(keys.front(), values.front())));
+      keys.pop_front();
+      values.pop_front();
+    }
+    return 1;
+  }
 };
 } // namespace mapreduce
 

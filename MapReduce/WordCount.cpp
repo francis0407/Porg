@@ -1,10 +1,6 @@
-
-//WordCount.cpp
-
 #include "Mapper.h"
 #include "Reducer.h"
 #include "common.h"
-
 namespace mapreduce
 {
 using std::string;

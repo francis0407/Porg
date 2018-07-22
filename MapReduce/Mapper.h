@@ -9,14 +9,14 @@
 #include "Shuffle.h"
 
 //register a mapper written by user
-#define REGISTER_MAPPER(M, K1, V1, K2, V2)                                                       \
-  int doMapper(string &input, string &result, string &errorMessage, int partition_index[])       \
-  {                                                                                              \
-    Context<K2, list<V2>> context;                                                               \
-    M mapper(input);                                                                             \
-    ADDERROR((mapper.run(context.keys, context.values)));                                        \
-    ADDERROR((mapreduce::partition<K2, V2, BKDRHash<K2>, 5>(context, result, partition_index))); \
-    return 1;                                                                                    \
+#define REGISTER_MAPPER(M, K1, V1, K2, V2)                                                                 \
+  int doMapper(string &input, string &result, string &errorMessage, int partition_index[])                 \
+  {                                                                                                        \
+    Context<K2, list<V2>> context;                                                                         \
+    M mapper(input);                                                                                       \
+    ADDERROR((mapper.run(context.keys, context.values)));                                                  \
+    ADDERROR((mapreduce::partition<K2, V2, HASH_ALG<K2>, REDUCER_NUM>(context, result, partition_index))); \
+    return 1;                                                                                              \
   }
 
 namespace mapreduce
@@ -46,7 +46,27 @@ public:
 
   virtual int map(const K1 &key, const V1 &value) = 0;
 
-  int run(list<K2> &key_res, list<list<V2>> &value_res);
+  int run(list<K2> &key_res, list<list<V2>> &value_res)
+  {
+    // for reference only
+    Format format(input);
+    ASSERT(format.formatting(keys, values));
+    // print_pair<K1,V1>(keys,values);
+
+    while (!keys.empty() && !values.empty())
+    {
+      ASSERT(map(keys.front(), values.front()));
+      keys.pop_front();
+      values.pop_front();
+    }
+    //print_pair<K2,V2>(context.keys,context.values);
+
+    ASSERT((mapreduce::sort<K2, V2>(context.keys, context.values)));
+    // print_pair<K2,V2>(context.keys,context.values);
+    ASSERT((mapreduce::merge_value<K2, V2>(context.keys, context.values, key_res, value_res)));
+    // print_pair_list<K2,V2>(key_res,value_res);
+    return 1;
+  }
 };
 } // namespace mapreduce
 

@@ -13,22 +13,8 @@
 #include <sstream>
 #include <utility>
 
-//if A == 0 then
-//log error message and return 0
-#define ASSERT(A)                 \
-    if ((A) == 0)                 \
-    {                             \
-        ErrorMessage::append(#A); \
-        return 0;                 \
-    }
-
-#define ADDERROR(A)                             \
-    if ((A) == 0)                               \
-    {                                           \
-        ErrorMessage::append(#A);               \
-        ErrorMessage::getMessage(errorMessage); \
-        return 0;                               \
-    }
+#define REDUCER_NUM 5
+#define HASH_ALG BKDRHash
 
 namespace mapreduce
 {
@@ -60,5 +46,20 @@ class ErrorMessage
     }
 };
 } // namespace mapreduce
+//if A == 0 then
+//log error message and return 0
+#define ASSERT(A)                 \
+    if ((A) == 0)                 \
+    {                             \
+        ErrorMessage::append(#A); \
+        return 0;                 \
+    }
 
+#define ADDERROR(A)                             \
+    if ((A) == 0)                               \
+    {                                           \
+        ErrorMessage::append(#A);               \
+        ErrorMessage::getMessage(errorMessage); \
+        return 0;                               \
+    }
 #endif //MAPREDUCE_COMMON
