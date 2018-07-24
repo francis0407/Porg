@@ -9,10 +9,10 @@
     {
     }
 }
-status表示操作成功（1）或者失败（0），用于作为回复的消息，默认为1。
-message用来保存操作失败时的错误信息或者其他保留信息，请注意此信息不需要解析，若出现非空的message，各端（浏览器、服务器、调度器）均需要把message输出到终端。
-action用来记录当前消息的类型，这是需要被解析的字符串。
-data用于传输消息中的数据。
+`status`表示操作成功（1）或者失败（0），用于作为回复的消息，默认为1。
+`message`用来保存操作失败时的错误信息或者其他保留信息，请注意此信息不需要解析，**若出现非空的message，各端（浏览器、服务器、调度器）均需要把message输出到终端。**
+`action`用来记录当前消息的类型，这是需要被解析的字符串。
+`data`用于传输消息中的数据。
 
 ## 具体接口内容
 
@@ -41,6 +41,9 @@ data用于传输消息中的数据。
 1.  做map/reduce
     "action":"task"
     "data":{"type":'m'/'r',"uid":做任务的用户id,"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
+2.  JobTracker与web server建立连接(此消息只有在当前没有JobTracker时有效)
+    "action":"tracker"
+    "data":{}
 
 ### WebServer端
 
