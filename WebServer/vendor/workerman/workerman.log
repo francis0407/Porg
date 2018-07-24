@@ -1,0 +1,82 @@
+2018-07-24 13:46:29 pid:1 ParseError: syntax error, unexpected '}', expecting ';' in C:\Users\scott\Desktop\ProgPHP\Applications\Prog\Events.php:110
+Stack trace:
+#0 [internal function]: Workerman\Autoloader::loadByNamespace('Events')
+#1 [internal function]: spl_autoload_call('Events')
+#2 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(217): is_callable('Events::onWorke...')
+#3 [internal function]: GatewayWorker\BusinessWorker->onWorkerStart(Object(GatewayWorker\BusinessWorker))
+#4 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(2216): call_user_func(Array, Object(GatewayWorker\BusinessWorker))
+#5 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(197): Workerman\Worker->run()
+#6 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1221): GatewayWorker\BusinessWorker->run()
+#7 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1164): Workerman\Worker::forkWorkersForWindows()
+#8 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(478): Workerman\Worker::forkWorkers()
+#9 C:\Users\scott\Desktop\ProgPHP\Applications\Prog\start_businessworker.php(32): Workerman\Worker::runAll()
+#10 {main}
+2018-07-24 13:46:30 pid:1 Worker process terminated
+2018-07-24 13:46:31 pid:1 ParseError: syntax error, unexpected '}', expecting ';' in C:\Users\scott\Desktop\ProgPHP\Applications\Prog\Events.php:110
+Stack trace:
+#0 [internal function]: Workerman\Autoloader::loadByNamespace('Events')
+#1 [internal function]: spl_autoload_call('Events')
+#2 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(217): is_callable('Events::onWorke...')
+#3 [internal function]: GatewayWorker\BusinessWorker->onWorkerStart(Object(GatewayWorker\BusinessWorker))
+#4 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(2216): call_user_func(Array, Object(GatewayWorker\BusinessWorker))
+#5 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(197): Workerman\Worker->run()
+#6 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1221): GatewayWorker\BusinessWorker->run()
+#7 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1164): Workerman\Worker::forkWorkersForWindows()
+#8 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(478): Workerman\Worker::forkWorkers()
+#9 C:\Users\scott\Desktop\ProgPHP\Applications\Prog\start_businessworker.php(32): Workerman\Worker::runAll()
+#10 {main}
+2018-07-24 13:46:32 pid:1 Worker process terminated
+2018-07-24 13:46:33 pid:1 ParseError: syntax error, unexpected '}', expecting ';' in C:\Users\scott\Desktop\ProgPHP\Applications\Prog\Events.php:110
+Stack trace:
+#0 [internal function]: Workerman\Autoloader::loadByNamespace('Events')
+#1 [internal function]: spl_autoload_call('Events')
+#2 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(217): is_callable('Events::onWorke...')
+#3 [internal function]: GatewayWorker\BusinessWorker->onWorkerStart(Object(GatewayWorker\BusinessWorker))
+#4 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(2216): call_user_func(Array, Object(GatewayWorker\BusinessWorker))
+#5 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(197): Workerman\Worker->run()
+#6 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1221): GatewayWorker\BusinessWorker->run()
+#7 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1164): Workerman\Worker::forkWorkersForWindows()
+#8 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(478): Workerman\Worker::forkWorkers()
+#9 C:\Users\scott\Desktop\ProgPHP\Applications\Prog\start_businessworker.php(32): Workerman\Worker::runAll()
+#10 {main}
+2018-07-24 13:46:34 pid:1 Worker process terminated
+2018-07-24 13:46:35 pid:1 ParseError: syntax error, unexpected '}', expecting ';' in C:\Users\scott\Desktop\ProgPHP\Applications\Prog\Events.php:110
+Stack trace:
+#0 [internal function]: Workerman\Autoloader::loadByNamespace('Events')
+#1 [internal function]: spl_autoload_call('Events')
+#2 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(217): is_callable('Events::onWorke...')
+#3 [internal function]: GatewayWorker\BusinessWorker->onWorkerStart(Object(GatewayWorker\BusinessWorker))
+#4 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(2216): call_user_func(Array, Object(GatewayWorker\BusinessWorker))
+#5 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(197): Workerman\Worker->run()
+#6 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1221): GatewayWorker\BusinessWorker->run()
+#7 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1164): Workerman\Worker::forkWorkersForWindows()
+#8 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(478): Workerman\Worker::forkWorkers()
+#9 C:\Users\scott\Desktop\ProgPHP\Applications\Prog\start_businessworker.php(32): Workerman\Worker::runAll()
+#10 {main}
+2018-07-24 13:46:36 pid:1 Worker process terminated
+2018-07-24 13:46:37 pid:1 ParseError: syntax error, unexpected '}', expecting ';' in C:\Users\scott\Desktop\ProgPHP\Applications\Prog\Events.php:110
+Stack trace:
+#0 [internal function]: Workerman\Autoloader::loadByNamespace('Events')
+#1 [internal function]: spl_autoload_call('Events')
+#2 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(217): is_callable('Events::onWorke...')
+#3 [internal function]: GatewayWorker\BusinessWorker->onWorkerStart(Object(GatewayWorker\BusinessWorker))
+#4 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(2216): call_user_func(Array, Object(GatewayWorker\BusinessWorker))
+#5 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(197): Workerman\Worker->run()
+#6 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1221): GatewayWorker\BusinessWorker->run()
+#7 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1164): Workerman\Worker::forkWorkersForWindows()
+#8 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(478): Workerman\Worker::forkWorkers()
+#9 C:\Users\scott\Desktop\ProgPHP\Applications\Prog\start_businessworker.php(32): Workerman\Worker::runAll()
+#10 {main}
+2018-07-24 13:46:38 pid:1 ParseError: syntax error, unexpected '}', expecting ';' in C:\Users\scott\Desktop\ProgPHP\Applications\Prog\Events.php:110
+Stack trace:
+#0 [internal function]: Workerman\Autoloader::loadByNamespace('Events')
+#1 [internal function]: spl_autoload_call('Events')
+#2 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(217): is_callable('Events::onWorke...')
+#3 [internal function]: GatewayWorker\BusinessWorker->onWorkerStart(Object(GatewayWorker\BusinessWorker))
+#4 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(2216): call_user_func(Array, Object(GatewayWorker\BusinessWorker))
+#5 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\gateway-worker\src\BusinessWorker.php(197): Workerman\Worker->run()
+#6 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1221): GatewayWorker\BusinessWorker->run()
+#7 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(1164): Workerman\Worker::forkWorkersForWindows()
+#8 C:\Users\scott\Desktop\ProgPHP\vendor\workerman\workerman\Worker.php(478): Workerman\Worker::forkWorkers()
+#9 C:\Users\scott\Desktop\ProgPHP\Applications\Prog\start_businessworker.php(32): Workerman\Worker::runAll()
+#10 {main}
