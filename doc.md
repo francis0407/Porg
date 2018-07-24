@@ -64,15 +64,16 @@
     "action":"task"
     "data":{"type":'m'/'r',"uid":做任务的用户id 64位整数,"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
 
-5.  JobTracker建立连接(此消息只有在当前没有JobTracker时有效)
+5. JobTracker建立连接(此消息只有在当前没有JobTracker时有效)
     "action":"tracker"
     "data":{}
 
-发出的消息:
-1.  新用户连接，要求其测速
-    "action":"speed"
-    "data":{"url":[map_url,reduce_url(这两个url会以配置文件的形式存在服务器上)]}
+6. 心跳检测，发送给Browser
 
+    "action":"ping"
+    "data":{}
+
+发出的消息:
 2.  给用户分发任务
     "action":"task"
     "data":{"type":'m'/'r',"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
@@ -100,15 +101,19 @@
 1.  测速
     "action":"speed"
     "data":{"url":[map_url,reduce_url]}
-
 2.  做任务
     "action":"task"
     "data":{"type":'m'/'r',"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
 
 发出的消息：
-1.  测完速
+1. 连接上服务器自动测速
     "action":"connect"
     "data":{"speed":I/O速度（单位为KB/s）32位整数}
+
+2. 心跳检测，发送给Web server（接受到ping消息时）
+
+    "action":"pong"
+    "data":{}
 
 2.  完成任务
     "action":"finish"
