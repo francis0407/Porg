@@ -1,5 +1,21 @@
 # Usage
 
+## Start
+
+### debug mode
+
+`php start.php start`
+
+### daemon mode
+
+`php start.php start -d`
+
+## Stop
+
+`php start.php stop`
+
+# Structure
+
 ## Vendor
 
 - `\workerman\gateway-worker\src\Gateway.php`
