@@ -98,7 +98,7 @@
 只有与Webserver走WebSocket，与FileSystem走正常的HTML，这里先不写。
 
 接收的消息:
-2.  做任务
+1.  做任务
     "action":"task"
     "data":{"type":'m'/'r',"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
 
@@ -112,13 +112,30 @@
     "action":"pong"
     "data":{}
 
-2.  完成任务
+3.  完成任务
     "action":"finish"
     "data":{"type":'m'/'r',"tid":task_id 32位整数,"url":[任务结果的地址,对于map有多个，reduce只有一个]}
 
-3.  出错了
+4.  出错了
     "action":"error"    
     "data":{"error":错误字符串}
+
+Browser与FileSystem使用正常的Http协议(post)
+发送：
+{
+    "url":"",
+    "start":文件中的起始偏移,
+    "len":文件长度(-1表示到结尾)
+}
+返回json：
+{
+    "status":,
+    "message":"",
+    "len":真实返回的数据长度,
+    "data":""
+}
+
+
 
 
 
