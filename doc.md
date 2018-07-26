@@ -40,7 +40,7 @@
 发送的消息：
 1.  做map/reduce
     "action":"task"
-    "data":{"type":'m'/'r',"uid":做任务的用户id,"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
+    "data":{"type":'m'/'r',"uid":做任务的用户id,"tid":task_id,"slice":"此节点负责map文件的第i个切片" , url":[输入文件的地址,对于map有一个，reduce有多个]}
 2.  JobTracker与web server建立连接(此消息只有在当前没有JobTracker时有效)
     "action":"tracker"
     "data":{}
@@ -48,19 +48,19 @@
 ### WebServer端
 
 接收的消息:
-1. 用户完成测速
+1.  用户完成测速
     "action":"connect"
     "data":{"speed":I/O速度（单位为KB/s）32位整数}
 
-2. 用户完成任务
+2.  用户完成任务
     "action":"finish"
     "data":{"type":'m'/'r',"tid":task_id 32位整数,"url":[任务结果的地址,对于map有多个，reduce只有一个]}
 
-3. 用户发来错误消息
+3.  用户发来错误消息
     "action":"error"    
     "data":{"error":错误字符串}
 
-4. JobTracker发来的任务
+4.  JobTracker发来的任务
     "action":"task"
     "data":{"type":'m'/'r',"uid":做任务的用户id 64位整数,"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
 
@@ -74,23 +74,23 @@
     "data":{}
 
 发出的消息:
-1. 给用户分发任务
+2.  给用户分发任务
     "action":"task"
     "data":{"type":'m'/'r',"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
 
-2. 通知JobTracker完成测速
+3.  通知JobTracker完成测速
     "action":"connect"
     "data":{"uid":用户id,"speed":I/O}
 
-3. 通知JobTracker有用户断开
+4.  通知JobTracker有用户断开
     "action":"disconnect"
     "data":{"uid":用户id}
 
-4. 通知JobTracker用户发来错误消息
+5.  通知JobTracker用户发来错误消息
     "action":"error"    
     "data":{"uid":,"error":错误字符串}
 
-5. 通知JobTracker用户完成任务
+6.  通知JobTracker用户完成任务
     "action":"finish"
     "data":{"type":'m'/'r',"uid","tid":task_id 32位整数,"url":[任务结果的地址,对于map有多个，reduce只有一个]}
 
@@ -98,7 +98,10 @@
 只有与Webserver走WebSocket，与FileSystem走正常的HTML，这里先不写。
 
 接收的消息:
-1.  做任务
+1.  测速
+    "action":"speed"
+    "data":{"url":[map_url,reduce_url]}
+2.  做任务
     "action":"task"
     "data":{"type":'m'/'r',"tid":task_id,"url":[输入文件的地址,对于map有一个，reduce有多个]}
 
@@ -112,30 +115,13 @@
     "action":"pong"
     "data":{}
 
-3.  完成任务
+2.  完成任务
     "action":"finish"
     "data":{"type":'m'/'r',"tid":task_id 32位整数,"url":[任务结果的地址,对于map有多个，reduce只有一个]}
 
-4.  出错了
+3.  出错了
     "action":"error"    
     "data":{"error":错误字符串}
-
-Browser与FileSystem使用正常的Http协议(post)
-发送：
-{
-    "url":"",
-    "start":文件中的起始偏移,
-    "len":文件长度(-1表示到结尾)
-}
-返回json：
-{
-    "status":,
-    "message":"",
-    "len":真实返回的数据长度,
-    "data":""
-}
-
-
 
 
 
