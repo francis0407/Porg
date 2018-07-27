@@ -3,8 +3,16 @@
 
 #ifndef MAPREDUCE_REDUCER
 #define MAPREDUCE_REDUCER
+#include <emscripten.h>
+#include <cstring>
 #include "Context.h"
 #include "common.h"
+
+namespace mapreduce {
+  using std::string;
+  using std::list;
+  int doReducer(list<string> &input, string &result, string &errorMessage);
+}
 
 #define REGISTER_REDUCER(R, K1, V1, K2, V2)                                                                        \
   int doReducer(list<string> &input, string &result, string &errorMessage)                                         \
@@ -39,6 +47,47 @@
     }                                                                                                              \
     return 1;                                                                                                      \
   }
+
+char *__wasmReducerResultMemory = nullptr;
+char *__wasmReducerErrorMessageMemory = nullptr;
+std::list<std::string> __wasmReducerInputList;
+
+void __pushStringToInputList(char *str) {
+  __wasmReducerInputList.push_front(std::string(str));
+}
+
+int _doReducerWrapper_() {
+  std::string result, error;
+  int ret = mapreduce::doReducer(__wasmReducerInputList, result, error);
+  __wasmReducerInputList.clear();
+  if (__wasmReducerResultMemory)
+    delete[] __wasmReducerResultMemory;
+  if (__wasmReducerErrorMessageMemory)
+    delete[] __wasmReducerErrorMessageMemory;
+  __wasmReducerResultMemory = new char[result.size() + 1];
+  __wasmReducerErrorMessageMemory = new char[error.size() + 1];
+  memcpy(__wasmReducerResultMemory, result.c_str(), result.size() + 1);
+  memcpy(__wasmReducerErrorMessageMemory, error.c_str(), error.size() + 1);
+  return ret;
+}
+
+extern "C" {
+void EMSCRIPTEN_KEEPALIVE __addStringToInputList(char *str) {
+  __pushStringToInputList(str);
+}
+
+int EMSCRIPTEN_KEEPALIVE __doReducerWrapper__() {
+  return _doReducerWrapper_();
+}
+
+char* EMSCRIPTEN_KEEPALIVE __getReducerResultRef() {
+  return __wasmReducerResultMemory;
+}
+
+char* EMSCRIPTEN_KEEPALIVE __getReducerErrorRef() {
+  return __wasmReducerErrorMessageMemory;
+}
+}
 
 namespace mapreduce
 {
