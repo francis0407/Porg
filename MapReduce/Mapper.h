@@ -4,9 +4,20 @@
 #ifndef MAPREDUCE_MAPPER
 #define MAPREDUCE_MAPPER
 
+#include <emscripten.h>
+#include <iostream>
+#include <cstring>
 #include "common.h"
 #include "InputFormat.h"
 #include "Shuffle.h"
+
+namespace mapreduce {
+  int doMapper(std::string &input, std::string &result, std::string &errorMessage, int partition_index[]);
+}
+
+char *__wasmMapperResultMemory = nullptr;
+char *__wasmMapperErrorMessageMemory = nullptr;
+int __wasmMapperPartitionIndexMemory[REDUCER_NUM] = { 0 };
 
 //register a mapper written by user
 #define REGISTER_MAPPER(M, K1, V1, K2, V2)                                                                 \
@@ -18,6 +29,43 @@
     ADDERROR((mapreduce::partition<K2, V2, HASH_ALG<K2>, REDUCER_NUM>(context, result, partition_index))); \
     return 1;                                                                                              \
   }
+
+int _doMapperWrapper_(const char* input) {
+  std::string i(input), r, e;
+  if (__wasmMapperResultMemory)
+    delete[] __wasmMapperResultMemory;
+  if (__wasmMapperErrorMessageMemory)
+    delete[] __wasmMapperErrorMessageMemory;
+  int ret = mapreduce::doMapper(i, r, e, __wasmMapperPartitionIndexMemory);
+  __wasmMapperResultMemory = new char[r.size() + 1];
+  __wasmMapperErrorMessageMemory = new char[e.size() + 1];
+  memcpy(__wasmMapperResultMemory, r.c_str(), r.size() + 1);
+  memcpy(__wasmMapperErrorMessageMemory, e.c_str(), e.size() + 1);
+  return ret;
+}
+
+// wasm exports
+extern "C" {
+char* EMSCRIPTEN_KEEPALIVE __getMapperResultRef() {
+  return __wasmMapperResultMemory;
+}
+
+char* EMSCRIPTEN_KEEPALIVE __getMapperErrorMessageRef() {
+  return __wasmMapperErrorMessageMemory;
+}
+
+int* EMSCRIPTEN_KEEPALIVE __getMapperPartitionRef() {
+  return __wasmMapperPartitionIndexMemory;
+}
+
+int EMSCRIPTEN_KEEPALIVE __getPartitionIndexLength() {
+  return REDUCER_NUM;
+}
+
+int EMSCRIPTEN_KEEPALIVE __doMapperWrapper__(const char* input) {
+  return _doMapperWrapper_(input);
+}
+}
 
 namespace mapreduce
 {
