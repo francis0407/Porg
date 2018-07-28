@@ -82,10 +82,10 @@ class Events
                 // Add uid information
                 $data = $message_data['data'];
                 // exception
-                if(!isset($data['uid']))
+                /*if(!isset($data['uid']))
                 {
-                    throw new \Exception("\$data['uid'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
-                }
+                    throw new \Exception("\data['uid'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                }*/
                 $data['uid'] = $client_id;
                 // message format: {status:1, message:'', action:error, data:xx}
                 $new_message = array('status'=>1,'message'=>'', 'action'=>'error', 'data'=>$data);

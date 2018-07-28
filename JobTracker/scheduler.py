@@ -25,7 +25,7 @@ class scheduler(threading.Thread):
         '''
         super(scheduler, self).__init__()
         self.url_list = []
-        self.url = "localhost"
+        self.url = url
         self.mutex = Semaphore()
         self.map_jobs = map_jobs
         self.n_reducer = n_reducer
@@ -99,13 +99,13 @@ class scheduler(threading.Thread):
             self.mutex.release()
             tid = int(time.time() * 1000)
             self.tid_map[tid] = counter
-            data = json.dumps({
+            data = {
                 'type':'r',
                 'uid': new_worker[1],
                 'tid' : tid,
                 'slice': counter,
-                'url': str(self.url_list)
-            })
+                'url': self.url_list
+            }
             self.ws.send(msg_generator(1, "", "task", data))
             counter += 1
 
@@ -132,13 +132,13 @@ class scheduler(threading.Thread):
             tid = int(time.time() * 1000)
             #tid = counter
             self.tid_map[tid] = job
-            data = json.dumps({
+            data = {
                 'type':'m',
                 'uid' :new_worker[1],
                 'tid' :tid,
                 'slice': job,
-                'url' :self.url
-            })
+                'url' :[self.url]
+            }
             self.ws.send(msg_generator(1, "", "task", data))
             print(self.map_status)
 

@@ -1,30 +1,3 @@
-var ws = new WebSocket('ws://localhost:7272');
-
-ws.onopen = function(evt) {
-	response = {};
-	response.action = 'connect';
-	response.speed = 0;
-};
-
-ws.onmessage = function(evt) {
-	data = eval('('+evt.data+')');
-	response = {};
-	switch (data.type) {
-	case 'ping':
-		response.action = 'pong';
-		response.data = {};
-		break;
-	default:
-		break;
-	}
-	console.log(JSON.stringify(response));
-	ws.send(JSON.stringify(response));
-};
-
-ws.onclose = function(evt) {
-	// on connection closing
-};
-
 function doMapper(input) {
 	var enc = new TextEncoder();
 	var inputBuffer = enc.encode(input);
@@ -65,7 +38,9 @@ function doReducer(input) {
 }
 
 Module['onRuntimeInitialized'] = () => {
-	map1 = doMapper("Hello world\nHello again\nBye bye.\n");
+	/*map1 = doMapper("Hello world\nHello again\nBye bye.\n");
 	map2 = doMapper("This is a sentence.\nHere comes the second.\nAnd the third!\n");
-	reduce = doReducer([map1.result, map2.result]);
+	reduce = doReducer([map1.result, map2.result]);*/
+	
+	sendSpeed(10);
 }

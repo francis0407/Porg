@@ -21,7 +21,8 @@ def connect(msg):
         "speed":    int32
     }
     '''
-    data = json.loads(msg['data'])
+    # data = json.loads(msg['data'])
+    data = msg['data']
     uid = data['uid']
     speed = data['speed']
     worker_q.put((-speed, uid))
@@ -35,7 +36,8 @@ def disconnect(msg):
         "uid":      int32
     }
     '''
-    data = json.loads(msg['data'])
+    # data = json.loads(msg['data'])
+    data = msg['data']
     uid = data['uid']
     Scheduler.removeWorker(uid)
     print("disconnect")
@@ -48,31 +50,36 @@ def finish(msg):
     '''
     Mark a job as finished.
     '''
-    data = json.loads(msg['data'])
+    # data = json.loads(msg['data'])
+    data = msg['data']
     tid = data['tid']
     url = data['url']
     t = data['type']
     Scheduler.jobFinished(tid, url, t)
 
+def ping(msg):
+    ws.send(msg_generator(1,"","pong",""))
+    
 
 def callback(msg):
     action = {
         "connect": connect,
         "disconnect": disconnect,
         "error": error,
-        "finish": finish
+        "finish": finish,
+        "ping":ping
     }
     func = action.get(msg['action'])
     return func(msg)
 
 if __name__ == "__main__":
 
-    ws = create_connection("ws://localhost:8080/echo")
+    ws = create_connection("ws://localhost:7272")
     worker_q = queue.PriorityQueue()
     
-    map_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    url = ""
-    n_reducer = 30
+    map_list = [0,1,2,3,4]
+    url = "input"
+    n_reducer = 5
     Scheduler = scheduler(worker_q, ws, map_list,n_reducer=n_reducer ,url = url)
     Scheduler.start()
 
@@ -81,7 +88,7 @@ if __name__ == "__main__":
     while(True):
         result =  ws.recv()
         msg = json.loads(result)
-        print("Remote: {}".format(msg['message']))
+        print("Remote: {}".format(msg))
         callback(msg)
     
     
