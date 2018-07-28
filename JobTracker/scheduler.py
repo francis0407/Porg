@@ -56,6 +56,8 @@ class scheduler(threading.Thread):
         mark them as done in map_status
         '''
         if type == "m":
+            if self.mapCount == 0:
+                return
             self.mutex.acquire()
             n = self.tid_map[tid]
             if self.map_status[n] == None:
@@ -83,21 +85,23 @@ class scheduler(threading.Thread):
             return
 
     def schedule_reduce(self):
+        print("start reduce")
         counter = 0
         while(True):
-            if self.reduceCount == 0:
-                return
             new_worker = self.worker_q.get(True)
             if new_worker[1] in self.dead_worker:
                 self.dead_worker.remove(new_worker[1])
                 continue
             self.mutex.acquire()
-            while(self.reduce_status[counter] != None):
+            if self.reduceCount == 0:
+                return
+            counter %= self.n_reducer
+            while(self.reduce_status[counter] == None):
                 counter += 1
-                counter %= self.n_reducer
             self.reduce_status[counter].append(new_worker)
             self.mutex.release()
-            tid = int(time.time() * 1000)
+            tid = (int(time.time() * 1000) + 
+                    new_worker[0] * new_worker[1])
             self.tid_map[tid] = counter
             data = {
                 'type':'r',
@@ -129,7 +133,8 @@ class scheduler(threading.Thread):
             counter += 1
             self.map_status[job].append(new_worker) 
             self.mutex.release()
-            tid = int(time.time() * 1000)
+            tid = (int(time.time() * 1000) + 
+                    new_worker[0] * new_worker[1])
             #tid = counter
             self.tid_map[tid] = job
             data = {
@@ -144,9 +149,10 @@ class scheduler(threading.Thread):
 
     def run(self):
         while not self.stoprequest.isSet():
-            self.schedule_map()   
+            self.schedule_map()
             print("map done!")
-            self.schedule_reduce()         
+            self.schedule_reduce()    
+            print("reduce done!")     
 
 
 
