@@ -24,8 +24,8 @@ else{
         $file = fopen($url,"w") or die(Message("Can't create file".$url,$result));
         $index_file = fopen($index_url,"w") or die(Message("Can't create index file",$result));      
         
-        fwrite($file,$_POST['data']) or die(Message("Can't write file $url",$result));
-        fwrite($index_file,$_POST['index']) or die(Message("Can't write index file $index_file",$result));
+        fwrite($file,$_POST['data']) or !len($_POST['data']) or die(Message("Can't write file $url",$result));
+        fwrite($index_file,$_POST['index']) or !len($_POST['index']) or die(Message("Can't write index file $index_file",$result));
 
         $result['status'] = 1;
         $result['message'] = 'succeed';
@@ -38,7 +38,7 @@ else{
         $url = JOB_DIR.'/'.'reduce_output_'.$_POST['tid'];
         !file_exists($url) or die(Message("File ".$url." exists.",$result,-1));
         $file = fopen($url,"w") or die(Message("Can't create file".$url,$result));
-        fwrite($file,$_POST['data']) or die(Message("Can't write file $url",$result));
+        fwrite($file,$_POST['data']) or !len($_POST['data']) or die(Message("Can't write file $url",$result));
 
         $result['status'] = 1;
         $result['message'] = 'succeed';
