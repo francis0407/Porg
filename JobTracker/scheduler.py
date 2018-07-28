@@ -117,13 +117,13 @@ class scheduler(threading.Thread):
         self.mapCount = len(self.map_jobs)
         counter = 0
         while(True):
-            if self.mapCount == 0:
-                return
             new_worker = self.worker_q.get(True)
             if new_worker[1] in self.dead_worker:
                 self.dead_worker.remove(new_worker[1])
                 continue
             self.mutex.acquire()
+            if self.mapCount == 0:
+                return
             counter %= self.mapCount
             job = self.map_jobs[counter]
             counter += 1
@@ -140,12 +140,12 @@ class scheduler(threading.Thread):
                 'url' :[self.url]
             }
             self.ws.send(msg_generator(1, "", "task", data))
-            print(self.map_status)
 
 
     def run(self):
         while not self.stoprequest.isSet():
             self.schedule_map()   
+            print("map done!")
             self.schedule_reduce()         
 
 
