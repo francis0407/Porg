@@ -101,7 +101,7 @@ class scheduler(threading.Thread):
             self.reduce_status[counter].append(new_worker)
             self.mutex.release()
             tid = (int(time.time() * 1000) + 
-                    new_worker[0] * new_worker[1])
+                    new_worker[0])
             self.tid_map[tid] = counter
             data = {
                 'type':'r',
@@ -127,6 +127,7 @@ class scheduler(threading.Thread):
                 continue
             self.mutex.acquire()
             if self.mapCount == 0:
+                self.worker_q.put(new_worker)
                 return
             counter %= self.mapCount
             job = self.map_jobs[counter]
@@ -134,7 +135,7 @@ class scheduler(threading.Thread):
             self.map_status[job].append(new_worker) 
             self.mutex.release()
             tid = (int(time.time() * 1000) + 
-                    new_worker[0] * new_worker[1])
+                    new_worker[0])
             #tid = counter
             self.tid_map[tid] = job
             data = {
