@@ -14,7 +14,7 @@ index.html的body：
 
 wordcount.js是编译出来的
 编译命令:
-em++ WordCount.cpp -s WASM=1 -std=c++11 -o wordcount.html -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'AsciiToString', 'getValue']"
+em++ WordCount.cpp -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -std=c++11 -o wordcount.html -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'AsciiToString', 'getValue']"
 
 你会得到wordcount.js和wordcount.wasm, 把他们俩放这。
 
