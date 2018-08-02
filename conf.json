@@ -1,0 +1,7 @@
+{
+    "Map_Num":5,
+    "Reduce_Num":5,
+    "WebServer_IP":"localhost",
+    "Input_File_Path":"/var/www/fs/Test"
+
+}
