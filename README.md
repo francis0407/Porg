@@ -1,5 +1,9 @@
 # Porg
+<<<<<<< HEAD
 A MapReduce compute framework which uses Browsers as its task nodes.
+=======
+A MapReduce framework 
+>>>>>>> f5cbb8cb61ced762d3b2d84c6d340ad4c75ff1a7
 
 ## What can it do?
 Porg is designed to run MapReduce program on the Internet. It simply replaces Task Nodes (in Hadoop) with Browsers. As it uses browsers, its task nodes can be easily extended. Therefore every client on the Internet can be a task node. Besides, Porg uses C++ as main language so that it can be compiled into WebAssembly which has a better performance than JavaScript.
