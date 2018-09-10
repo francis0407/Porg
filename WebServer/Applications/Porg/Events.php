@@ -51,6 +51,30 @@ class Events
                 Gateway::joinGroup($client_id, 'tracker');
                 return ;
             
+            // New client
+            case 'client':
+                $data = array('cid'=>$client_id);
+                $new_message = array('status'=>1,'message'=>'','action'=>'client','data'=>$data);
+                Gateway::sendToGroup('tracker', json_encode($new_message));
+                return;
+            
+            // New Job from client
+            case 'job':
+                $new_message = $message_data;
+                $new_message['data']['cid'] = $client_id;
+                Gateway::sendToGroup('tracker',json_encode($new_message));
+                return;
+            
+            // Finish Job
+            case 'jobfinish':
+                $cid = $message_data['data']['cid'];
+                if(!Gateway::isOnline($cid))
+                {
+                    echo "cid:{$cid} was off-line \n";
+                    return ;
+                }
+                Gateway::sendToClient($cid, json_encode($message_data));
+                return;
             // Browser finished I/O speed test
             case 'connect':
                 // exception

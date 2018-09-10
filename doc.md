@@ -123,5 +123,23 @@
     "action":"error"    
     "data":{"error":错误字符串}
 
-
+### Client端
+接收的消息:
+1.  "action":"jobfinish"
+    "data":{
+        "output":url,
+    }
+发出的消息：
+1. 登录连接服务器
+    "action":"client"
+    "data":{}
+2. 建立新的Job
+    "action":"job"
+    "data":{
+        "name":""
+        "job_dir":""
+        "program":"" wasm地址,
+        "input":"" 输入文件的地址,
+        "map_size":int map的个数
+    }
 

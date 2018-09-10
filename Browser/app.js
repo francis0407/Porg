@@ -101,6 +101,7 @@ function mapTask(msg){
                         "type":'m',
                         "tid":msg.slice,
                         "data":result.result,
+                        "job_dir":msg.job_dir,
                         "index":JSON.stringify(result.partitionIndex)
                     },
                     success:function(ans){
@@ -205,6 +206,7 @@ function reduceTask(msg){
             "type":"r",
             "tid":msg.slice,
             "data":result.result,
+            "job_dir":msg.job_dir
         },
         success:function(ans){
             ans = eval('('+ans+')');

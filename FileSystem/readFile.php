@@ -11,9 +11,9 @@ if( !(isset($_POST['url']) && isset($_POST['slice'])) ){
     exit(1);
 }
 else{
-    $url = JOB_DIR.'/'.$_POST['url'];
+    $url = $_POST['url'];
 
-    $index_url = JOB_DIR.'/'.$_POST['url'].'_'.'index';
+    $index_url = $_POST['url'].'_'.'index';
     
     $file = fopen($url,"r") or die(Message("Can't open file ".$_POST['url'],$result));
     $index = fopen($index_url,"r") or die(Message("Can't open index of ".$_POST['url'],$result));
