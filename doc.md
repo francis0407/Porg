@@ -140,6 +140,7 @@
         "job_dir":""
         "program":"" wasm地址,
         "input":"" 输入文件的地址,
-        "map_size":int map的个数
+        "map_num": map的个数,
+        "reduce_num": reduce的个数
     }
 
