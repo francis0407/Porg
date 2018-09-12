@@ -127,7 +127,9 @@
 接收的消息:
 1.  "action":"jobfinish"
     "data":{
-        "output":url,
+        "cid":"",
+        "name":""jobname,
+        "result":""url,
     }
 发出的消息：
 1. 登录连接服务器
@@ -136,8 +138,9 @@
 2. 建立新的Job
     "action":"job"
     "data":{
-        "name":""
-        "job_dir":""
+        "name":"" jobname
+        "cid":""  client id
+        "job_dir":"" 工作目录
         "program":"" wasm地址,
         "input":"" 输入文件的地址,
         "map_num": map的个数,

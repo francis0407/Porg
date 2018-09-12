@@ -13,6 +13,9 @@ class FileConf():
     def persist(self,value = 1):
         self.__persistent = value
 
+    def getUrl(self):
+        return self.__url
+
     def isSet(self):
         if self.__url == "":
             return 0
@@ -60,7 +63,7 @@ class Job():
 
         #calculate index of input files
         result = requests.post(url="makeIndex.php",data={
-            "url":self.input_file,
+            "url":self.input_file.getUrl(),
             "map_size":self.map_size
         })
         result_obj = json.loads(result)
@@ -77,8 +80,8 @@ class Job():
             "data":{
                 "name":self.job_name,
                 "job_dir":self.job_dir,
-                "program":self.prog_file,
-                "input":self.input_file,
+                "program":self.prog_file.getUrl(),
+                "input":self.input_file.getUrl(),
                 "map_num":self.map_num,
                 "reduce_num":self.reduce_num
             }
@@ -93,7 +96,7 @@ class Job():
 
     def getResult(self):
         # HttpRequest to FS
-        return 0
+        return self.output_file
 
 class WSConnector():
     def __init__(self,url=""):
@@ -132,9 +135,9 @@ class WSConnector():
                     self.__msg_queue.append(msg)
         return result
     
-def connectServer(url):
+def connectServer(url = WSIP):
     global ws
-    ws = WSConnector("ws://localhost:7272")
+    ws = WSConnector()
     ws.connect(url)
     ws.send({
         "status":1,
