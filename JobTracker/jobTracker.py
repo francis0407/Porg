@@ -9,7 +9,7 @@ import globalState
 global Scheduler
 
 def newJob(msg):
-    data = msg['data']
+    data = json.loads(msg['data'])
     new_job = job(data['name'], data['cid'],
                 data['job_dir'], data['program'],
                 data['input'], int(data['map_num']), int(data['reduce_num']))

@@ -40,6 +40,8 @@ class scheduler(threading.Thread):
         self.n_reducer = new_job.reduce_num
         self.mapCount = 0
         self.reduceCount = self.n_reducer
+        self.job_dir = job_dir
+        self.program = new_job.program
         # a dict used to track status of all map/reduce jobs,
         # entities in map_jobs are keys,
         # a list of worker(if not finished) or None object(if finished)
@@ -79,6 +81,7 @@ class scheduler(threading.Thread):
             self.mutex.release()
             return
         if type == "r":
+            self.reduce_result = url
             self.mutex.acquire()
             n = self.tid_map[tid]
             if self.reduce_status[n] == None:
@@ -115,7 +118,9 @@ class scheduler(threading.Thread):
                 'uid': new_worker[1],
                 'tid' : tid,
                 'slice': counter,
-                'url': self.url_list
+                'url': self.url_list,
+                'program': self.program,
+                'job_dir': self.job_dir
             }
             self.ws.send(msg_generator(1, "", "task", data))
             counter += 1
@@ -167,7 +172,7 @@ class scheduler(threading.Thread):
             data = {
                 "cid":new_job.cid,
                 "name":new_job.name,
-                "result":self.url_list
+                "result":self.reduce_result
             }
             self.ws.send(msg_generator(1, "", "jobFinish", data))
                 
