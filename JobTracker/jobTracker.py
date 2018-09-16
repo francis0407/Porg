@@ -4,10 +4,16 @@ import json
 import queue
 from scheduler import scheduler
 from scheduler import msg_generator
-global worker_q
+from job import job
+import globalState
 global Scheduler
 
-
+def newJob(msg):
+    data = msg['data']
+    new_job = job(data['name'], data['cid'],
+                data['job_dir'], data['program'],
+                data['input'], int(data['map_num']), int(data['reduce_num']))
+    globalState.job_q.put(new_job)
 
 def connect(msg):
     '''
@@ -21,11 +27,10 @@ def connect(msg):
         "speed":    int32
     }
     '''
-    # data = json.loads(msg['data'])
-    data = msg['data']
-    uid = data['uid']
-    speed = data['speed']
-    worker_q.put((-speed, uid))
+    data = json.loads(msg['Data'])
+    uid = data['Uid']
+    speed = data['Speed']
+    globalState.worker_q.put((-speed, uid))
 
 def disconnect(msg):
     '''
@@ -37,8 +42,8 @@ def disconnect(msg):
     }
     '''
     # data = json.loads(msg['data'])
-    data = msg['data']
-    uid = data['uid']
+    data = msg['Data']
+    uid = data['Uid']
     Scheduler.removeWorker(uid)
     print("disconnect")
 
@@ -50,12 +55,13 @@ def finish(msg):
     '''
     Mark a job as finished.
     '''
-    # data = json.loads(msg['data'])
-    data = msg['data']
-    tid = data['tid']
-    url = data['url']
-    t = data['type']
-    Scheduler.jobFinished(tid, url, t)
+    data = json.loads(msg['Data'])
+    #data = msg['Data']
+    tid = data['Tid']
+    url = data['Url']
+    t = data['Type']
+    jobID = data['Name']
+    Scheduler.jobFinished(tid, url, t, jobID)
 
 def ping(msg):
     ws.send(msg_generator(1,"","pong",""))
@@ -67,23 +73,19 @@ def callback(msg):
         "disconnect": disconnect,
         "error": error,
         "finish": finish,
-        "ping":ping
+        "ping":ping,
+        "job":newJob
     }
-    func = action.get(msg['action'])
+    func = action.get(msg['Action'])
     return func(msg)
 
 if __name__ == "__main__":
 
     ws = create_connection("ws://localhost:7272")
-    worker_q = queue.PriorityQueue()
-    
-    map_list = [0,1,2,3,4]
-    url = "input"
-    n_reducer = 5
-    Scheduler = scheduler(worker_q, ws, map_list,n_reducer=n_reducer ,url = url)
+    ws.send(msg_generator(1, "", "tracker", ""))
+    Scheduler = scheduler(ws)
     Scheduler.start()
 
-    ws.send(msg_generator(1, "", "tracker", ""))
 
     while(True):
         result =  ws.recv()
