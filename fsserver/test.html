@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script>
+        function dd() {
+            console.log("send");
+            // postData('http://localhost:4049/upload', 
+            //     {
+            //         output: "oopp",
+            //         content: "aaaxxxxx"
+            //     })
+            // .then(
+            //     data => console.log(data.body)); // JSON from `response.json()` call
+            fetch("http://localhost:4049/upload", {
+                method: "Post",
+                body: JSON.stringify({output: "oopxx", content: "xxxaaa"}),
+                mode: "cors",
+                redirect: 'follow', // manual, *follow, error
+                referrer: 'no-referrer', // *client, no-referrer
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, same-origin, *omit
+                headers: {
+                    'user-agent': 'Mozilla/4.0 MDN Example',
+                    'content-type': 'application/json'
+                }
+            })
+            .catch(function(reason) {
+                console.log(reason);
+            })
+            .then(function(data) {
+                return data.text();
+            })
+            .then(function(data) {
+                console.log(data);
+            })
+            // Ajax.post({
+            //     url:"localhost:4049/upload",
+            //     data:{
+            //         output: "oopp",
+            //         content: "aaaxxxxx"
+            //     },
+            //     success: function (msg) {
+            //         console.log(msg);
+            //     }
+            // })
+        }
+        function postData(url, data) {
+  // Default options are marked with *
+            return fetch(url, {
+                body: JSON.stringify(data), // must match 'Content-Type' header
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, same-origin, *omit
+                headers: {
+                'user-agent': 'Mozilla/4.0 MDN Example',
+                'content-type': 'application/json'
+                },
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, cors, *same-origin
+                redirect: 'follow', // manual, *follow, error
+                referrer: 'no-referrer', // *client, no-referrer
+            })
+        }
+        var Ajax = (function() {
+        var that = this;
+        that.createXHR = function() {
+            if (window.XMLHttpRequest) { 
+                return new XMLHttpRequest();
+            } else if (window.ActiveXObject) { 
+                var versions = [ 'MSXML2.XMLHttp', 'Microsoft.XMLHTTP' ];
+                for (var i = 0, len = versions.length; i < len; i++) {
+                    try {
+                        return new ActiveXObject(version[i]);
+                        break;
+                    } catch (e) {
+                    }
+                }
+            } else {
+            }
+        }
+        that.init = function(obj) {
+            var objAdapter = {
+                method : 'get',
+                data : {},
+                success : function() {
+                },
+                complete : function() {
+                },
+                error : function(s) {
+                    alert('status:' + s + 'error!');
+                },
+                async : true
+            }
+            that.url = obj.url + '?rand=' + Math.random();
+            that.method = obj.method || objAdapter.method;
+            that.data = that.params(obj.data) || that.params(objAdapter.data);
+            that.async = obj.async || objAdapter.async;
+            that.complete = obj.complete || objAdapter.complete;
+            that.success = obj.success || objAdapter.success;
+            that.error = obj.error || objAdapter.error;
+        }
+        that.ajax = function(obj) {
+            that.method = obj.method || 'get';
+            if (obj.method === 'post') {
+                that.post(obj);
+            } else {
+                that.get(obj);
+            }
+        }
+        that.post = function(obj) {
+            var xhr = that.createXHR(); 
+            that.init(obj);
+            that.method = 'post';
+            if (that.async === true) { 
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) { 
+                        that.callback(obj, this); 
+                    }
+                };
+            }
+            xhr.open(that.method, that.url, that.async);
+            xhr.setRequestHeader('Content-Type',
+                    'application/x-www-form-urlencoded');
+            xhr.send(that.data); 
+            if (that.async === false) { 
+                that.callback(obj, this); 
+            }
+        };
+        that.get = function(obj) {
+            var xhr = that.createXHR(); 
+            that.init(obj);
+            if (that.async === true) { 
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) { 
+                        that.callback(obj, this); 
+                    }
+                };
+            }
+            that.url += that.url.indexOf('?') == -1 ? '?' + that.data : '&'
+                    + that.data;
+            xhr.open(that.method, that.url, that.async);
+            xhr.send(null); 
+            if (that.async === false) { 
+                that.callback(obj, this); 
+            }
+        }
+        that.callback = function(obj, xhr) {
+            if (xhr.status == 200) {
+                obj.success(xhr.responseText);
+            } else {
+            }
+        }
+        that.params = function(data) {
+            var arr = [];
+            for ( var i in data) {
+                arr.push(encodeURIComponent(i) + '=' + encodeURIComponent(data[i]));
+            }
+            return arr.join('&');
+        }
+        return {
+            post : that.post,
+            get : that.get,
+            ajax : that.ajax
+        }
+    })();
+    </script>
+</head>
+<body>
+    <button onclick="dd()">abc</button>
+</body>
+</html>

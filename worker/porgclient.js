@@ -11,7 +11,7 @@
     };
 
     var messageHandle = {
-        "newTask": getNewTask
+        "task": getNewTask
     };
 
     porg.run = function(host, args) { // TODO: using args of porg
@@ -26,12 +26,14 @@
     }
 
     function onMessage(msg) {
-        var request = JSON.parse(msg);
+        console.log(msg);
+        var request = JSON.parse(msg.data);
+        console.log(request);
         messageHandle[request["action"]](request["data"]);
     }
 
     function onClose() {
-
+        console.log("websocket closing...");
     }
 
     function registerWorker() {
@@ -80,15 +82,18 @@
     }
 
     function maponlyTask(jobInfo, taskInfo, taskArg) {
-        var downloadProgram = ajax(jobInfo["program"], {}, "get"); // download function
-        var downloadInput = ajax(taskInfo["input"][0], {}, "get"); // download input
+        var downloadProgram = ajaxGet(jobInfo["program"]); // download function
+        var downloadInput = ajaxGet(taskArg["input"][0]); // download input
         Promise.all([downloadProgram, downloadInput])
             .then(function(values) {                                // execute program
                 return new Promise(function (resolve, reject) {
-                    var program = new Function(values[0]);
+                    console.log(values[0]);
+                    console.log(values[1]);
                     var input = values[1];
                     try {
+                        var program = eval(values[0]);
                         var results = program(input);   // TODO: program args
+                        console.log(results);
                         resolve(results);
                     } catch (ex) {
                         reject(ex);
@@ -96,7 +101,7 @@
                 });
             }, rejectionPromise)
             .then(function(results) {
-                return ajax(jobInfo["upload"], {output: taskArg["output"], content: results}, "post");
+                return ajaxPost(jobInfo["host"], {output: taskArg["output"], content: results});
             }, rejectionPromise)
             .then(function(msg){
                 finishTask(taskInfo, msg);
@@ -113,11 +118,15 @@
         
     }
 
+    function reduceTask(jobInfo, taskArg) {
+
+    }
+
     function failTask(taskInfo, msg) {
         var response = {
             status: "fail",
             message: msg,
-            action: "failTask",
+            action: "fail task",
             data: taskInfo
         };
 
@@ -125,131 +134,52 @@
     }
 
     function finishTask(taskInfo, msg) {
+        if (JSON.parse(msg)['status'] != "success") {
+            failTask(taskInfo, msg);
+            return;
+        }
         var response = {
             status: "success",
             message: "",
-            action: "finishTask",
+            action: "finish task",
             data: taskInfo
         };
 
         ws.send(JSON.stringify(response));
     }
-
-    async function ajax(url, data, type) {
-        return new Promise(function (resolve, reject) {
-            var setting = {
-                url: url,
-                data: data,
-                success: function (message) {resolve(message);},
-                async: true
-            }
-            if (type == "get")
-                Ajax.get(setting)
-            else
-                Ajax.post(setting)    
-        });
+    
+    async function ajaxGet(url) {
+        // Default options are marked with *
+                  return fetch(url, {
+                      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                      credentials: 'same-origin', // include, same-origin, *omit
+                      headers: {
+                        'user-agent': 'Mozilla/4.0 MDN Example',
+                      },
+                      method: "Get", // *GET, POST, PUT, DELETE, etc.
+                      mode: 'cors', // no-cors, cors, *same-origin
+                      redirect: 'follow', // manual, *follow, error
+                      referrer: 'no-referrer', // *client, no-referrer
+                  })
+                  .then(response => response.text())
+                  .catch(rejectionPromise);
     }
 
-    var Ajax = (function() {
-        var that = this;
-        that.createXHR = function() {
-            if (window.XMLHttpRequest) { 
-                return new XMLHttpRequest();
-            } else if (window.ActiveXObject) { 
-                var versions = [ 'MSXML2.XMLHttp', 'Microsoft.XMLHTTP' ];
-                for (var i = 0, len = versions.length; i < len; i++) {
-                    try {
-                        return new ActiveXObject(version[i]);
-                        break;
-                    } catch (e) {
-                    }
-                }
-            } else {
-            }
-        }
-        that.init = function(obj) {
-            var objAdapter = {
-                method : 'get',
-                data : {},
-                success : function() {
-                },
-                complete : function() {
-                },
-                error : function(s) {
-                    alert('status:' + s + 'error!');
-                },
-                async : true
-            }
-            that.url = obj.url + '?rand=' + Math.random();
-            that.method = obj.method || objAdapter.method;
-            that.data = that.params(obj.data) || that.params(objAdapter.data);
-            that.async = obj.async || objAdapter.async;
-            that.complete = obj.complete || objAdapter.complete;
-            that.success = obj.success || objAdapter.success;
-            that.error = obj.error || objAdapter.error;
-        }
-        that.ajax = function(obj) {
-            that.method = obj.method || 'get';
-            if (obj.method === 'post') {
-                that.post(obj);
-            } else {
-                that.get(obj);
-            }
-        }
-        that.post = function(obj) {
-            var xhr = that.createXHR(); 
-            that.init(obj);
-            that.method = 'post';
-            if (that.async === true) { 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4) { 
-                        that.callback(obj, this); 
-                    }
-                };
-            }
-            xhr.open(that.method, that.url, that.async);
-            xhr.setRequestHeader('Content-Type',
-                    'application/x-www-form-urlencoded');
-            xhr.send(that.data); 
-            if (that.async === false) { 
-                that.callback(obj, this); 
-            }
-        };
-        that.get = function(obj) {
-            var xhr = that.createXHR(); 
-            that.init(obj);
-            if (that.async === true) { 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4) { 
-                        that.callback(obj, this); 
-                    }
-                };
-            }
-            that.url += that.url.indexOf('?') == -1 ? '?' + that.data : '&'
-                    + that.data;
-            xhr.open(that.method, that.url, that.async);
-            xhr.send(null); 
-            if (that.async === false) { 
-                that.callback(obj, this); 
-            }
-        }
-        that.callback = function(obj, xhr) {
-            if (xhr.status == 200) {
-                obj.success(xhr.responseText);
-            } else {
-            }
-        }
-        that.params = function(data) {
-            var arr = [];
-            for ( var i in data) {
-                arr.push(encodeURIComponent(i) + '=' + encodeURIComponent(data[i]));
-            }
-            return arr.join('&');
-        }
-        return {
-            post : that.post,
-            get : that.get,
-            ajax : that.ajax
-        }
-    })();
+    async function ajaxPost(url, data) {
+        return fetch(url, {
+            body: JSON.stringify(data),
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, same-origin, *omit
+            headers: {
+            'user-agent': 'Mozilla/4.0 MDN Example',
+            'content-type': 'application/json'
+            },
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // *client, no-referrer
+        })
+        .then(response => response.text())
+        .catch(rejectionPromise);
+    }
 })();
