@@ -3,6 +3,10 @@
         var output = []
         for (var i = 0; i < 5; i++)
             output.push(input);
-        return output;
+        // return output;
+        return new Promise((rs, rj) => {
+            rs(output);
+        });
     }
+    
 })();

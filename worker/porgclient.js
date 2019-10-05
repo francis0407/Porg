@@ -92,11 +92,13 @@
                     var input = values[1];
                     try {
                         var program = eval(values[0]);
-                        var results = program(input);   // TODO: program args
-                        console.log(results);
-                        resolve(results);
+                        // var results = program(input);   // TODO: program args
+                        // console.log(results);
+                        // resolve(results);
+                        return program(input);
                     } catch (ex) {
-                        reject(ex);
+                        // reject(ex);
+                        return new Promise((rs, rj) => rj(ex));
                     }
                 });
             }, rejectionPromise)

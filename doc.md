@@ -122,6 +122,3 @@
 3.  出错了
     "action":"error"    
     "data":{"error":错误字符串}
-
-
-
