@@ -1,3 +1,4 @@
 server/target
+server/.idea
 doc.md
 fsserver/node_modules
