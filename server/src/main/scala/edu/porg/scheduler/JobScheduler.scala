@@ -39,25 +39,46 @@ class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
   }
 
   override def registerWorker(worker: Worker): Unit = {
-    logger.info(s"New Worker: ${worker.ID}")
-    workers.put(worker.ID, worker)
-    WorkerHistory.registerNewWorker(worker)
+    WorkerManager.registerWorker(worker)
   }
 
-  override def finishTask(taskID: TaskID, taskInfo: TaskInfo): Unit = ???
+  override def finishTask(taskID: TaskID, taskInfo: TaskInfo): Unit = {
+    logger.info(s"Finish task ${taskID.toString}")
+    this.synchronized {
+      if (taskScheduler != null) {
+        taskScheduler.finishTask(taskID, taskInfo)
+      }
+    }
+  }
 
-  override def disconnect(workerID: String): Unit = ???
+  override def disconnect(workerID: String): Unit = {
+    WorkerManager.disconnect(workerID)
+  }
 
   override def cancelJob(jobID: Int): Unit = ???
 
   override def run(): Unit = {
     logger.info("Start Porg JobScheduler")
     while (true) {
-      // 1. If there is no job is scheduling, pick a job.
-      if (runningJob == null) {
-        // blocking take the first job from the job queue
-        runningJob = jobQueue.take()
-
+      // 1. If there is no job, pick a job.
+      this.synchronized {
+        if (runningJob == null) {
+          // blocking take the first job from the job queue
+          runningJob = jobQueue.take()
+          runningJob.prepareToSchedule()
+          logger.info(s"Begin to schedule Job: #${runningJob.jid}/${runningJob.getName}")
+        }
+      }
+      // 2. schedule the job until it is finished
+      while (!runningJob.isFinished) {
+        this.synchronized {
+          taskScheduler = runningJob.getNextTaskScheduler(taskScheduler)
+        }
+        taskScheduler.run()
+      }
+      this.synchronized {
+        taskScheduler = null
+        runningJob = null
       }
     }
   }

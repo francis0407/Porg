@@ -17,7 +17,7 @@ class InMemoryStorage extends HistoryStorage {
   override def put(k: String, v: String): Unit = map.put(k, v)
 
   override def getAll(prefix: String): Seq[(String, String)] = {
-    map.iteratorFrom(prefix).takeWhile(_._1.startsWith(prefix)).toArray
+    map.iteratorFrom(prefix).takeWhile(_._1.startsWith(prefix)).toSeq
   }
 }
 

@@ -24,8 +24,6 @@ object WorkerHistory {
     history.get(workerID) match {
       case p: PorgWorkerHistory =>
         p.status = workerStatus.toString
-      case null =>
-        _
     }
   }
 
@@ -33,8 +31,6 @@ object WorkerHistory {
     history.get(workerID) match {
       case p: PorgWorkerHistory =>
         p.finishedTasks = p.finishedTasks :+ TaskHistoryWithJobID(jobID, taskHistory)
-      case null =>
-        _
     }
   }
 
