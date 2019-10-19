@@ -43,7 +43,7 @@ class MapOnlyJob(
     if (hasGeneratedScheduler)
       null
     else {
-      val tasks = inputs.zipWithIndex.map({case (input: String, tid: Int) => new MapOnlyTask(tid, input)})
+      val tasks = inputs.zipWithIndex.map({case (input: String, tid: Int) => new MapOnlyTask(this, tid, input)})
       hasGeneratedScheduler = true
       new MapOnlyTaskScheduler(this, tasks)
     }

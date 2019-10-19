@@ -42,7 +42,7 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
           val newJobInfo = (parsed \ "data").extract[NewJobInfo]
           val job: Job = newJobInfo.jtype.toLowerCase match {
             case "maponly" =>
-              MapOnlyJob(
+              new MapOnlyJob(
                 newJobInfo.name,
                 webSocket.getResourceDescriptor,
                 newJobInfo.dir,
@@ -50,7 +50,7 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
                 newJobInfo.inputs
               )
             case "mapcache" =>
-              MapCacheJob(
+              new MapCacheJob(
                 newJobInfo.name,
                 webSocket.getResourceDescriptor,
                 newJobInfo.dir,
@@ -70,7 +70,7 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
 
         case "finish task" =>
           val taskInfo = (parsed \ "data").extract[TaskInfo]
-          scheduler.finishTask(TaskID(taskInfo.jobInfo.jid, taskInfo.tid), taskInfo)
+          scheduler.finishTask(PorgWorker.getWorkerID(webSocket), TaskID(taskInfo.jobInfo.jid, taskInfo.tid), taskInfo)
         // Finish a task
       }
 

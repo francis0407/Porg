@@ -1,12 +1,12 @@
 package edu.porg.scheduler
 
-import java.util.concurrent.{BlockingQueue, ConcurrentHashMap}
+import java.util.concurrent.{BlockingQueue, ConcurrentHashMap, LinkedBlockingQueue}
 
 import edu.porg.history.WorkerHistory
+import edu.porg.message.BasicMessage
 import edu.porg.util.{AutoIncreased, Logging}
 import org.java_websocket.WebSocket
-
-import scala.sys.process.processInternal.LinkedBlockingQueue
+import net.liftweb.json._
 
 
 object WorkerStatus extends Enumeration {
@@ -16,7 +16,7 @@ object WorkerStatus extends Enumeration {
   val Disconnect = Value("Disconnect")
 }
 
-abstract class Worker {
+abstract class Worker extends Logging {
 
   def ID: String
 
@@ -29,7 +29,7 @@ abstract class Worker {
   var status = WorkerStatus.Waiting
 }
 
-object Worker extends AutoIncreased with Logging
+object Worker extends AutoIncreased
 
 object PorgWorker {
   def getWorkerID(webSocket: WebSocket): String =
@@ -45,6 +45,18 @@ class PorgWorker(webSocket: WebSocket) extends Worker {
     WorkerHistory.updateStatus(ID, status)
   }
 
+  override def executeTask(task: Task): Unit = {
+    val taskInfo = task.genTaskInfo()
+    val msg = BasicMessage(taskInfo)
+    val prettyMsg = prettyRender(parse(msg.toJson()))
+    //    println(prettymsg)
+    logger.info(s"send new task ${task.taskID.toString} to ${webSocket.getRemoteSocketAddress.toString}")
+    webSocket.send(prettyMsg)
+
+    status = WorkerStatus.Working
+    WorkerHistory.updateStatus(ID, status)
+  }
+
 }
 
 class TestWorker(id: String) extends Worker {
@@ -52,6 +64,8 @@ class TestWorker(id: String) extends Worker {
   override def ID: String = id
 
   override def disconnect(): Unit = {}
+
+  override def executeTask(task: Task): Unit = ???
 
 }
 

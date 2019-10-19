@@ -13,7 +13,7 @@ abstract class JobScheduler {
 
   def registerWorker(worker: Worker): Unit
 
-  def finishTask(taskID: TaskID, taskInfo: TaskInfo)
+  def finishTask(wokerID: String, taskID: TaskID, taskInfo: TaskInfo)
 
   def disconnect(workerID: String): Unit
 
@@ -42,11 +42,11 @@ class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
     WorkerManager.registerWorker(worker)
   }
 
-  override def finishTask(taskID: TaskID, taskInfo: TaskInfo): Unit = {
+  override def finishTask(workerID: String, taskID: TaskID, taskInfo: TaskInfo): Unit = {
     logger.info(s"Finish task ${taskID.toString}")
     this.synchronized {
       if (taskScheduler != null) {
-        taskScheduler.finishTask(taskID, taskInfo)
+        taskScheduler.finishTask(workerID, taskID, taskInfo)
       }
     }
   }
