@@ -12,7 +12,7 @@ server.use(bodyParser.urlencoded({extended: false}));
 
 
 var conf = {
-    root : "/home/francis/Documents/PorgFS/"
+    root : "/home/francis/Git/porg/example/"
 }
 
 server.all('*', function(req, res, next) {

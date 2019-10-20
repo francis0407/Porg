@@ -13,7 +13,7 @@ abstract class JobScheduler {
 
   def registerWorker(worker: Worker): Unit
 
-  def finishTask(wokerID: String, taskID: TaskID, taskInfo: TaskInfo)
+  def finishTask(workerID: String, taskID: TaskID, taskInfo: TaskInfo)
 
   def disconnect(workerID: String): Unit
 
@@ -24,7 +24,7 @@ abstract class JobScheduler {
 
 class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
 
-  val jobQueue: BlockingQueue[Job] = new LinkedBlockingQueue[Job](porgConf.getMaxWaitingJobs)
+  val jobQueue: BlockingQueue[Job] = new LinkedBlockingQueue[Job]()
 
   val workers: ConcurrentHashMap[String, Worker] = new ConcurrentHashMap[String, Worker]()
 
@@ -33,9 +33,9 @@ class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
   var runningJob: Job = null
 
   override def registerJob(job: Job): Unit = {
-    logger.info(s"New Job: ${job.getName}")
     jobQueue.put(job)
     JobHistory.registerNewJobHistory(job)
+    logger.info(s"New Job: ${job.getName}")
   }
 
   override def registerWorker(worker: Worker): Unit = {
@@ -52,7 +52,12 @@ class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
   }
 
   override def disconnect(workerID: String): Unit = {
-    WorkerManager.disconnect(workerID)
+    val runningTask = WorkerManager.disconnect(workerID)
+    this.synchronized {
+      if (runningTask != null && taskScheduler != null) {
+        taskScheduler.failTask(runningTask.taskID)
+      }
+    }
   }
 
   override def cancelJob(jobID: Int): Unit = ???
@@ -61,12 +66,14 @@ class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
     logger.info("Start Porg JobScheduler")
     while (true) {
       // 1. If there is no job, pick a job.
-      this.synchronized {
-        if (runningJob == null) {
-          // blocking take the first job from the job queue
-          runningJob = jobQueue.take()
-          runningJob.prepareToSchedule()
-          logger.info(s"Begin to schedule Job: #${runningJob.jid}/${runningJob.getName}")
+
+      if (runningJob == null) {
+        // blocking take the first job from the job queue
+        val newJob = jobQueue.take()
+        newJob.prepareToSchedule()
+        logger.info(s"Begin to schedule Job: #${newJob.jid}/${newJob.getName}")
+        this.synchronized {
+          runningJob = newJob
         }
       }
       // 2. schedule the job until it is finished
@@ -76,6 +83,8 @@ class PorgScheduler(porgConf: PorgConf) extends JobScheduler with Logging {
         }
         taskScheduler.run()
       }
+
+      runningJob.finishJob()
       this.synchronized {
         taskScheduler = null
         runningJob = null

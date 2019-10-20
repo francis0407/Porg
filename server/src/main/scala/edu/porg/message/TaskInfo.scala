@@ -1,5 +1,7 @@
 package edu.porg.message
 
+import edu.porg.scheduler.TaskID
+
 // Format:
 // {
 //   "job":
@@ -29,15 +31,17 @@ case class TaskArgInfo(input: Seq[String], output: String, cache: Seq[String]) {
   }
 }
 
-case class TaskInfo(jobInfo: JobInfo, tType: String, tid: Int, tArg: TaskArgInfo) {
+case class TaskInfo(job: JobInfo, tType: String, tid: Int, tArg: TaskArgInfo) {
   def toJson(): String = {
     s"""
        |{
-       |  "job": ${jobInfo.toJson()},
+       |  "job": ${job.toJson()},
        |  "tType": "$tType",
        |  "tid": $tid,
        |  "tArg": ${tArg.toJson()}
        |}
      """.stripMargin
   }
+
+  def taskID: TaskID = TaskID(job.jid, tid)
 }

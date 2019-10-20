@@ -18,16 +18,10 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
   implicit val format = DefaultFormats
 
   override def onOpen(webSocket: WebSocket, clientHandshake: ClientHandshake): Unit = {
-
+    logger.info(s"${webSocket.getRemoteSocketAddress.toString} connected")
   }
 
   override def onClose(webSocket: WebSocket, i: Int, s: String, b: Boolean): Unit = {
-//    val worker = Worker.workers.get(webSocket)
-//    if (worker != null) {
-//      logger.info(s"Worker disconnected: ${webSocket.getResourceDescriptor}")
-//      worker.diconnect()
-//      Worker.workers.remove(webSocket)
-//    }
     scheduler.disconnect(PorgWorker.getWorkerID(webSocket))
   }
 
@@ -45,18 +39,19 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
               new MapOnlyJob(
                 newJobInfo.name,
                 webSocket.getResourceDescriptor,
+                newJobInfo.host,
                 newJobInfo.dir,
                 newJobInfo.program,
                 newJobInfo.inputs
               )
-            case "mapcache" =>
-              new MapCacheJob(
-                newJobInfo.name,
-                webSocket.getResourceDescriptor,
-                newJobInfo.dir,
-                newJobInfo.program,
-                newJobInfo.inputs
-              )
+//            case "mapcache" =>
+//              new MapCacheJob(
+//                newJobInfo.name,
+//                webSocket.getResourceDescriptor,
+//                newJobInfo.dir,
+//                newJobInfo.program,
+//                newJobInfo.inputs
+//              )
             case _ =>
               throw new Exception("not support")
           }
@@ -66,11 +61,11 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
 //          val worker = new PorgWorker(webSocket, scheduler)
           val worker = new PorgWorker(webSocket)
           scheduler.registerWorker(worker)
-          logger.info(s"New worker from: ${webSocket.getResourceDescriptor}")
+//          logger.info(s"New worker from: ${webSocket.getRemoteSocketAddress.toString}")
 
         case "finish task" =>
           val taskInfo = (parsed \ "data").extract[TaskInfo]
-          scheduler.finishTask(PorgWorker.getWorkerID(webSocket), TaskID(taskInfo.jobInfo.jid, taskInfo.tid), taskInfo)
+          scheduler.finishTask(PorgWorker.getWorkerID(webSocket), TaskID(taskInfo.job.jid, taskInfo.tid), taskInfo)
         // Finish a task
       }
 
@@ -83,7 +78,7 @@ class PorgServer(port: Int, porgConf: PorgConf, scheduler: JobScheduler) extends
 
   override def onError(webSocket: WebSocket, e: Exception): Unit = {
     logger.error(
-      s"error from server: ${webSocket.getResourceDescriptor}, ${e.getMessage}")
+      s"error from server: ${PorgWorker.getWorkerID(webSocket)}, ${e.getMessage}")
   }
 
   override def onStart(): Unit = {

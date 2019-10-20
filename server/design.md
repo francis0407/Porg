@@ -34,7 +34,7 @@
 ## Job 的分类
 1. MapOnlyJob (MapOnlyTask)
 2. MapCacheJob (MapCacheTask)
-3. MapReduceJob (MapSortTask, MapReduceTask)
+3. MapReduceJob (MapShuffleTask, MapReduceTask)
    
 ## 
 
@@ -63,3 +63,7 @@ Map(date -> 1, lineorder -> 48509, supplier -> 4, part -> 183, customer -> 89)
 offheap
 Map(date -> 0, lineorder -> 2, supplier -> 0, part -> 0, customer -> 0)
 Map(date -> 1, lineorder -> 42559, supplier -> 4, part -> 164, customer -> 88)
+
+Map(date -> 0, lineorder -> 2, supplier -> 0, part -> 0, customer -> 0)
+Map(date -> 2, lineorder -> 46486, supplier -> 6, part -> 201, customer -> 119)
+Map(date -> 181, lineorder -> 17754, supplier -> 192, part -> 461, customer -> 354)

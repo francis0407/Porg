@@ -8,7 +8,7 @@ class PorgConf extends Logging {
     this
   }
 
-  def getMaxWaitingJobs: Int = conf("max_waiting_jobs").toInt
+  def getMaxWaitingJobs: Int = 100 //conf("max_waiting_jobs").toInt
 
   val conf: Map[String, String] = Map[String, String]()
 

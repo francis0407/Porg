@@ -1,6 +1,7 @@
 package edu.porg.scheduler
 
 import java.util.concurrent.{BlockingQueue, ConcurrentHashMap, LinkedBlockingQueue}
+import java.util.Date
 
 import edu.porg.history.WorkerHistory
 import edu.porg.message.BasicMessage
@@ -27,13 +28,15 @@ abstract class Worker extends Logging {
   val uniqueID: Int = Worker.newId()
 
   var status = WorkerStatus.Waiting
+
+  var workingTask: Task = null
 }
 
 object Worker extends AutoIncreased
 
 object PorgWorker {
   def getWorkerID(webSocket: WebSocket): String =
-    webSocket.getResourceDescriptor
+    webSocket.getRemoteSocketAddress.toString
 }
 
 class PorgWorker(webSocket: WebSocket) extends Worker {
@@ -50,10 +53,12 @@ class PorgWorker(webSocket: WebSocket) extends Worker {
     val msg = BasicMessage(taskInfo)
     val prettyMsg = prettyRender(parse(msg.toJson()))
     //    println(prettymsg)
-    logger.info(s"send new task ${task.taskID.toString} to ${webSocket.getRemoteSocketAddress.toString}")
+    logger.info(s"send new task ${task.taskID.toString} to $ID")
     webSocket.send(prettyMsg)
 
+    task.startTime = new Date().getTime
     status = WorkerStatus.Working
+    workingTask = task
     WorkerHistory.updateStatus(ID, status)
   }
 
@@ -74,19 +79,40 @@ object WorkerManager extends Logging {
 
   private val idealWorkers: BlockingQueue[Worker] = new LinkedBlockingQueue[Worker]()
 
+  private var idealWorkersNumber: Int = 0
+
+  def getConnectedWorkersNumber: Int = workers.size()
+
+  def getIdealWorkersNumber: Int = idealWorkersNumber
+
+
+  def finishTask(workerID: String): Unit = {
+    val worker = workers.get(workerID)
+    if (worker != null) {
+      worker.status = WorkerStatus.Waiting
+      idealWorkers.add(worker)
+      idealWorkersNumber += 1
+    }
+  }
+
   def registerWorker(worker: Worker): Unit = {
     logger.info(s"New worker ${worker.ID}")
     workers.put(worker.ID, worker)
     idealWorkers.put(worker)
+    idealWorkersNumber += 1
     WorkerHistory.registerNewWorker(worker)
   }
 
-  def disconnect(workerID: String): Unit = {
-    logger.info(s"Worker disconnect: $workerID")
+  def disconnect(workerID: String): Task = {
     val worker = workers.remove(workerID)
     if (worker != null) {
+      logger.info(s"Worker disconnect: $workerID")
+      if (worker.status == WorkerStatus.Waiting)
+        idealWorkersNumber -= 1
       worker.disconnect()
+      worker.workingTask
     } else {
+      null
       // TODO: disconnect may be called before registerWorker, add a list and check the workers
     }
   }
@@ -98,8 +124,12 @@ object WorkerManager extends Logging {
       worker.status match {
         case WorkerStatus.Waiting =>
           result = worker
+          idealWorkersNumber -= 1
         case WorkerStatus.Working =>
+          result = null
           logger.error(s"Worker ${worker.ID} in IdealWorkers is working, better to disconnect.")
+        case WorkerStatus.Disconnect =>
+          result = null
       }
     }
     result

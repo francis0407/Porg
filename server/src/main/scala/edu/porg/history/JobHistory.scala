@@ -8,13 +8,17 @@ import edu.porg.util.Logging
 
 import scala.collection.mutable
 
-abstract class JobHistory {
+abstract class JobHistory(
+    val name: String,
+    val jid: Int) {
 
 }
 
 object JobHistory {
   protected[history] val history: ConcurrentSkipListMap[Int, JobHistory] = new ConcurrentSkipListMap[Int, JobHistory]()
 
+  var currentJobID: Int = -1
+  var finishedJobNumber: Int = 0
   def registerNewJobHistory(job: Job): Unit = {
     job match {
       case moj: MapOnlyJob =>
@@ -22,22 +26,68 @@ object JobHistory {
     }
   }
 
+  def finishJob(job: Job): Unit = this.synchronized {
+    currentJobID = -1
+    finishedJobNumber += 1
+  }
+
+  def getFinishedJobsNumber: Int = this.synchronized {
+    finishedJobNumber
+  }
+
+  // JobName, TaskNumber, RunningTaskNumber, FinishedTaskNumber
+  def getCurrentJobInfo: (String, Int, Int, Int) = this.synchronized {
+    if (currentJobID == -1)
+      ("No Running Job", 0, 0, 0)
+    else {
+      val job = history.get(currentJobID)
+      job match {
+        case moj: MapOnlyJobHistory =>
+          (moj.name, moj.inputs.size, moj.doing_num, moj.finish_tasks.size)
+        case null =>
+          ("", -1, -1, -1)
+      }
+    }
+  }
+
+  def getTaskFinishTime(jid: Int): Seq[Long] = {
+    val jobHistory = if (jid == 0) {
+      this.synchronized {
+        if (currentJobID == -1)
+          null
+        else
+          history.get(currentJobID)
+      }
+    } else {
+      history.get(jid)
+    }
+    jobHistory match {
+      case moj: MapOnlyJobHistory =>
+        moj.finish_tasks.map(x => x.finishTime - x.startTime)
+      case null =>
+        Seq()
+    }
+  }
+
+  def getJobList: Array[Int] = {
+    history.keySet().toArray().map(_.asInstanceOf[Int])
+  }
 }
 
-case class MapOnlyJobHistory(
+class MapOnlyJobHistory(
     name: String,
     jid: Int,
     dir: String,
     program: String,
-    inputs: Seq[String],
+    val inputs: Seq[String],
     var finish_tasks: Seq[MapOnlyTaskHistory],
     var doing_num: Int,
-    var redo_num: Int) extends JobHistory
+    var redo_num: Int) extends JobHistory(name, jid)
 
 object MapOnlyJobHistory extends Logging {
 
   def newJobHistory(job: MapOnlyJob): Unit = {
-    JobHistory.history.put(job.jid, MapOnlyJobHistory(
+    JobHistory.history.put(job.jid, new MapOnlyJobHistory(
       job.name,
       job.jid,
       job.dir,
@@ -47,13 +97,15 @@ object MapOnlyJobHistory extends Logging {
       0,
       0
     ))
+    JobHistory.currentJobID = job.jid
   }
 
   def finishTask(jid: Int, task: MapOnlyTaskHistory): Unit = {
     JobHistory.history.get(jid) match {
-      case h: MapOnlyJobHistory =>
+      case h: MapOnlyJobHistory => h.synchronized {
         h.finish_tasks = h.finish_tasks :+ task
         h.doing_num = h.doing_num - 1
+      }
       case null =>
         logger.error("History not found.")
     }
@@ -61,9 +113,10 @@ object MapOnlyJobHistory extends Logging {
 
   def failTask(jid: Int): Unit = {
     JobHistory.history.get(jid) match {
-      case h: MapOnlyJobHistory =>
+      case h: MapOnlyJobHistory => h.synchronized {
         h.doing_num = h.doing_num - 1
         h.redo_num = h.redo_num + 1
+      }
       case null =>
         logger.error("History not found.")
     }
@@ -72,10 +125,11 @@ object MapOnlyJobHistory extends Logging {
   def doTask(jid: Int): Unit = {
     JobHistory.history.get(jid) match {
       case h: MapOnlyJobHistory =>
-        h.doing_num = h.doing_num + 1
+        h.synchronized {
+          h.doing_num = h.doing_num + 1
+        }
       case null =>
         logger.error("History not found.")
     }
   }
-
 }
