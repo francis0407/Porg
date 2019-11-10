@@ -1,7 +1,8 @@
 package edu.porg.webserver
 
+import java.util.Date
 import akka.http.scaladsl.server.{HttpApp, Route}
-import edu.porg.history.{JobHistory, WorkerHistory}
+import edu.porg.history.{JobHistory, MapOnlyJobHistory, WorkerHistory}
 import edu.porg.scheduler.{Job, WorkerManager}
 
 class WebServer extends HttpApp {
@@ -110,7 +111,46 @@ class WebServer extends HttpApp {
               complete(result)
             },
             path("getJobInfo"/IntNumber) {jid =>
-              complete("")
+              val jobInfo = JobHistory.getJobInfo(jid)
+              val result = jobInfo match {
+                case moj: MapOnlyJobHistory =>
+                  val avg_finish_time : Double =
+                    moj.finish_tasks.map(t => t.finishTime - t.startTime).sum.toDouble / moj.finish_tasks.size
+                  val taskInfos = moj.finish_tasks.map(t => {
+                    s"""
+                      |{
+                      |  "task_id"    : "${t.taskID.toString}",
+                      |  "unique_id"  : "${t.uniqueID}",
+                      |  "start_time" : "${new Date(t.startTime).toLocaleString}",
+                      |  "finish_time": "${new Date(t.finishTime).toLocaleString}",
+                      |  "use_time"   : "${t.finishTime - t.startTime} ms",
+                      |  "input_path" : "${t.input}",
+                      |  "output_path": "${t.output}",
+                      |}
+                    """.stripMargin
+                  }).mkString(",")
+                  s"""
+                    |{
+                    |    "job_name"       : "${moj.name}",
+                    |    "job_id"         : "$jid",
+                    |    "job_type"       : "MapOnlyJob",
+                    |    "job_dir"        : "${moj.dir}",
+                    |    "program_path"   : "${moj.program}",
+                    |    "start_time"     : "${moj.startTime.toLocaleString}",
+                    |    "finish_time"    : "${moj.finishTime.toLocaleString}",
+                    |    "task_number"    : "${moj.inputs.size}",
+                    |    "avg_finish_time": "$avg_finish_time ms",
+                    |    "tasks_info"     : [$taskInfos]
+                    |}
+                  """.stripMargin
+                case _ =>
+                  s"""
+                    |{
+                    |    "job_name"      : "No Such Job"
+                    |}
+                  """.stripMargin
+              }
+              complete(result)
             }
           )
         },

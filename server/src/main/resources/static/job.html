@@ -24,6 +24,53 @@
     <!-- Tweaks for older IEs--><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <script type="text/javascript">
+      window.onload = function() {
+        getJobInfo();
+      }
+      function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+          var pair = vars[i].split("=");
+          if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+      }
+      function getJobInfo() {
+        var jid = getQueryVariable("jid");  
+        fetch("api/getJobInfo/" + jid)
+        .then(result => result.json())
+        .then(json => {
+          for (var key in json) {
+            var doc = document.getElementById(key);
+            if (doc != null) {
+              doc.textContent = json[key];
+            }
+          }
+          var task_table = document.getElementById("task_table");
+          for (var task in json['tasks_info']) {
+            // <tr>
+            //   <th scope="row">Job3-Task1</th>
+            //   <td>12</td>
+            //   <td>12:21:03</td>
+            //   <td>12:22:05</td>
+            //   <td>1902ms</td>
+            //   <td>/home/francis/PorgFS/tmp/input/part-1</td>
+            //   <td>/home/francis/PorgFS/tmp/output/1</td>
+            // </tr>
+            task_table.innerHTML += 
+              '<tr>' + '<th scope="row">' + task['task_id'] + '</th>' +
+                '<td>' + task['unique_id'] + '</td>' +
+                '<td>' + task['start_time'] + '</td>' +
+                '<td>' + task['finish_time'] + '</td>' +
+                '<td>' + task['use_time'] + '</td>' +
+                '<td>' + task['input_path'] + '</td>' +
+                '<td>' + task['output_path'] + '</td>' + '</tr>';
+          }
+        })
+      }
+    </script>
   </head>
   <body>
     <div class="page">
@@ -48,63 +95,6 @@
               </div>
               <!-- Navbar Menu -->
               <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
-                <!-- Search-->
-                <!-- <li class="nav-item d-flex align-items-center"><a id="search" href="#"><i class="icon-search"></i></a></li> -->
-                <!-- Notifications-->
-                <!-- <li class="nav-item dropdown"> <a id="notifications" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-bell-o"></i><span class="badge bg-red badge-corner">12</span></a>
-                  <ul aria-labelledby="notifications" class="dropdown-menu">
-                    <li><a rel="nofollow" href="#" class="dropdown-item"> 
-                        <div class="notification">
-                          <div class="notification-content"><i class="fa fa-envelope bg-green"></i>You have 6 new messages </div>
-                          <div class="notification-time"><small>4 minutes ago</small></div>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item"> 
-                        <div class="notification">
-                          <div class="notification-content"><i class="fa fa-twitter bg-blue"></i>You have 2 followers</div>
-                          <div class="notification-time"><small>4 minutes ago</small></div>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item"> 
-                        <div class="notification">
-                          <div class="notification-content"><i class="fa fa-upload bg-orange"></i>Server Rebooted</div>
-                          <div class="notification-time"><small>4 minutes ago</small></div>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item"> 
-                        <div class="notification">
-                          <div class="notification-content"><i class="fa fa-twitter bg-blue"></i>You have 2 followers</div>
-                          <div class="notification-time"><small>10 minutes ago</small></div>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item all-notifications text-center"> <strong>view all notifications                                            </strong></a></li>
-                  </ul>
-                </li> -->
-                <!-- Messages                        -->
-                <!-- <li class="nav-item dropdown"> <a id="messages" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-envelope-o"></i><span class="badge bg-orange badge-corner">10</span></a>
-                  <ul aria-labelledby="notifications" class="dropdown-menu">
-                    <li><a rel="nofollow" href="#" class="dropdown-item d-flex"> 
-                        <div class="msg-profile"> <img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
-                        <div class="msg-body">
-                          <h3 class="h5">Jason Doe</h3><span>Sent You Message</span>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item d-flex"> 
-                        <div class="msg-profile"> <img src="img/avatar-2.jpg" alt="..." class="img-fluid rounded-circle"></div>
-                        <div class="msg-body">
-                          <h3 class="h5">Frank Williams</h3><span>Sent You Message</span>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item d-flex"> 
-                        <div class="msg-profile"> <img src="img/avatar-3.jpg" alt="..." class="img-fluid rounded-circle"></div>
-                        <div class="msg-body">
-                          <h3 class="h5">Ashley Wood</h3><span>Sent You Message</span>
-                        </div></a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item all-notifications text-center"> <strong>Read all messages   </strong></a></li>
-                  </ul>
-                </li> -->
-                <!-- Languages dropdown    -->
-                <!-- <li class="nav-item dropdown"><a id="languages" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link language dropdown-toggle"><img src="img/flags/16/GB.png" alt="English"><span class="d-none d-sm-inline-block">English</span></a>
-                  <ul aria-labelledby="languages" class="dropdown-menu">
-                    <li><a rel="nofollow" href="#" class="dropdown-item"> <img src="img/flags/16/DE.png" alt="English" class="mr-2">German</a></li>
-                    <li><a rel="nofollow" href="#" class="dropdown-item"> <img src="img/flags/16/FR.png" alt="English" class="mr-2">French                                         </a></li>
-                  </ul>
-                </li> -->
-                <!-- Logout    -->
                 <li class="nav-item"><a href="login.html" class="nav-link logout"> <span class="d-none d-sm-inline">ShutDownPorgServer</span><i class="fa fa-sign-out"></i></a></li>
               </ul>
             </div>
@@ -137,9 +127,6 @@
                     <li class="active"><a href="joboverview.html"> <i class="fa fa-bar-chart"></i>Job Overview</a></li>
                     <li><a href="#JobDetails" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Job Details</a>
                       <ul id="JobDetails" class="collapse list-unstyled ">
-                        <li><a href="#">Job1</a></li>
-                        <li><a href="#">Job2</a></li>
-                        <li><a href="#">Job3</a></li>
                       </ul>
                     </li>
                     <!-- <li><a href="login.html"> <i class="icon-interface-windows"></i>Login page </a></li> -->
@@ -156,23 +143,21 @@
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom">Charts</h2>
+              <h2 class="no-margin-bottom" id="job_title">Job#1</h2>
             </div>
           </header>
           <!-- Breadcrumb-->
           <div class="breadcrumb-holder container-fluid">
             <ul class="breadcrumb">
               <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-              <li class="breadcrumb-item active">Charts            </li>
+              <li class="breadcrumb-item active">JobInfo            </li>
             </ul>
           </div>
-          <!-- Charts Section-->
-          <section class="charts">
+          <section class="tables">   
             <div class="container-fluid">
               <div class="row">
-                <!-- Line Charts-->
-                <div class="col-lg-8">
-                  <div class="line-chart-example card">
+                <div class="col-lg-6">
+                  <div class="card">
                     <div class="card-close">
                       <div class="dropdown">
                         <button type="button" id="closeCard1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
@@ -180,149 +165,114 @@
                       </div>
                     </div>
                     <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Line Chart Example</h3>
+                      <h3 class="h4">Job Information</h3>
                     </div>
                     <div class="card-body">
-                      <canvas id="lineChartExample"></canvas>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <!-- <thead>
+                            <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                            </tr>
+                          </thead> -->
+                          <tbody>
+                            <tr>
+                              <th scope="row">JobName</th>
+                              <td id="job_name">Mark</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">JobID</th>
+                              <td id="job_id">#12</td>>
+                            </tr>
+                            <tr>
+                              <th scope="row">JobType</th>
+                              <td id="job_type">MapOnlyJob</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">JobDir</th>
+                              <td id="job_dir">/home/PorgFS/tmp</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">ProgramPath</th>
+                              <td id="program_path">/home/PorgFS/tmp/program.js</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">StartTime</th>
+                              <td id="start_time">12:21</th>
+                            </tr>
+                            <tr>
+                              <th scope="row">FinishTime</th>
+                              <td id="finish_time">13:11</th>
+                            </tr>
+                            <tr>
+                              <th scope="row">TasksNumber</th>
+                              <td id="task_number">68</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">AverageFinishTime</th>
+                              <td id="avg_finish_time">1032ms</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
-                  <div class="line-chart-example card no-margin-bottom">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard2" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Line Chart Example</h3>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="lineChartExample1"></canvas>
-                    </div>
-                  </div>
-                  <div class="line-chart-example card">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard3" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="lineChartExample2"></canvas>
-                    </div>
-                  </div>
-                </div>
-                <!-- Bar Charts-->
-                <div class="col-lg-4">
-                  <div class="bar-chart-example card no-margin-bottom">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard4" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Bar Chart Example</h3>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="barChart1"></canvas>
-                    </div>
-                  </div>
-                  <div class="line-chart-example card">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard5" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="barChart2"></canvas>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="bar-chart-example card">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard6" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard6" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Bar Chart Example</h3>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="barChartExample"></canvas>
-                    </div>
-                  </div>
-                </div>
-                <!-- Doughnut Chart -->
                 <div class="col-lg-6">
-                  <div class="pie-chart-example card">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard7" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Doughnut  Chart Example</h3>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="doughnutChartExample"></canvas>
+                <div class="line-chart-example card no-margin-bottom">
+                  <div class="card-close">
+                    <div class="dropdown">
+                      <button type="button" id="closeCard2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
+                      <div aria-labelledby="closeCard2" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
                     </div>
                   </div>
-                </div>
-                <!-- Pie Chart -->
-                <div class="col-lg-6">
-                  <div class="pie-chart-example card">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard8" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard8" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Pie  Chart Example</h3>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="pieChartExample"></canvas>
-                    </div>
+                  <div class="card-header d-flex align-items-center">
+                    <h3 class="h4">Task Finish Time</h3>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="barChartExample"></canvas>
                   </div>
                 </div>
-                <!-- Polar Chart-->
-                <div class="col-lg-6">
-                  <div class="polar-chart-example card">
-                    <div class="card-close">
-                      <div class="dropdown">
-                        <button type="button" id="closeCard9" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard9" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
-                      </div>
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Polar Chart Example</h3>
-                    </div>
-                    <div class="card-body">
-                      <canvas id="polarChartExample"></canvas>
-                    </div>
-                  </div>
                 </div>
-                <!-- Radar Chart-->
-                <div class="col-lg-6">
-                  <div class="radar-chart-example card">
+                <div class="col-lg-12">
+                  <div class="card">
                     <div class="card-close">
                       <div class="dropdown">
-                        <button type="button" id="closeCard10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
-                        <div aria-labelledby="closeCard10" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
+                        <button type="button" id="closeCard1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
+                        <div aria-labelledby="closeCard1" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
                       </div>
                     </div>
                     <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Radar Chart Example</h3>
+                      <h3 class="h4">Task Information</h3>
                     </div>
                     <div class="card-body">
-                      <canvas id="radarChartExample"></canvas>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>TaskID</th>
+                              <th>UniqueID</th>
+                              <th>StartTime</th>
+                              <th>FinishTime</th>
+                              <th>UseTime</th>
+                              <th>InputPath</th>
+                              <th>OutputPath</th>
+                            </tr>
+                          </thead>
+                          <tbody id="task_table">
+                            <tr>
+                              <th scope="row">Job3-Task1</th>
+                              <td>12</td>
+                              <td>12:21:03</td>
+                              <td>12:22:05</td>
+                              <td>1902ms</td>
+                              <td>/home/francis/PorgFS/tmp/input/part-1</td>
+                              <td>/home/francis/PorgFS/tmp/output/1</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -353,6 +303,7 @@
     <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
     <script src="vendor/chart.js/Chart.min.js"></script>
     <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
+    <script src="js/nav.js"></script>
     <script src="js/charts-custom.js"></script>
     <!-- Main File-->
     <script src="js/front.js"></script>

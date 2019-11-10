@@ -2,7 +2,7 @@ package edu.porg.history
 
 
 import java.util.concurrent.ConcurrentSkipListMap
-
+import java.util.Date
 import edu.porg.scheduler.{Job, MapOnlyJob}
 import edu.porg.util.Logging
 
@@ -26,9 +26,16 @@ object JobHistory {
     }
   }
 
-  def finishJob(job: Job): Unit = this.synchronized {
-    currentJobID = -1
-    finishedJobNumber += 1
+  def finishJob(job: Job): Unit = {
+    this.synchronized {
+      currentJobID = -1
+      finishedJobNumber += 1
+
+    }
+    history.get(job.jid) match {
+      case moj: MapOnlyJobHistory =>
+        moj.finishTime = new Date()
+    }
   }
 
   def getFinishedJobsNumber: Int = this.synchronized {
@@ -72,14 +79,29 @@ object JobHistory {
   def getJobList: Array[Int] = {
     history.keySet().toArray().map(_.asInstanceOf[Int])
   }
+
+  def getJobInfo(jid: Int): JobHistory = {
+    history.get(jid) match {
+      case h: MapOnlyJobHistory =>
+        h
+      case _ =>
+        null
+    }
+  }
 }
+
+
+class NoSuchJobHistory() extends JobHistory("No Such Job", 0)
+
 
 class MapOnlyJobHistory(
     name: String,
     jid: Int,
-    dir: String,
-    program: String,
+    val dir: String,
+    val program: String,
     val inputs: Seq[String],
+    val startTime: Date,
+    var finishTime: Date,
     var finish_tasks: Seq[MapOnlyTaskHistory],
     var doing_num: Int,
     var redo_num: Int) extends JobHistory(name, jid)
@@ -93,6 +115,8 @@ object MapOnlyJobHistory extends Logging {
       job.dir,
       job.program,
       job.inputs,
+      new Date(),
+      null,
       Seq(),
       0,
       0

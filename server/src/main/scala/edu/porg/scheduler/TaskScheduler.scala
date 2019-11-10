@@ -49,7 +49,7 @@ class MapOnlyTaskScheduler(job: Job, tasks: Seq[MapOnlyTask]) extends TaskSchedu
 
         task.finishTime = new Date().getTime
         val taskHistory =
-          MapOnlyTaskHistory(taskID, task.uniqueID, task.startTime, task.finishTime, taskInfo.tArg.output)
+          MapOnlyTaskHistory(taskID, task.uniqueID, task.startTime, task.finishTime, taskInfo.tArg.input(0), taskInfo.tArg.output)
         WorkerHistory.finishTask(workerID, job.jid, taskHistory)
         MapOnlyJobHistory.finishTask(job.jid, taskHistory)
 

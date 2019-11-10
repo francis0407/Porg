@@ -13,5 +13,6 @@ case class MapOnlyTaskHistory(
   uniqueID: Int,
   startTime: Long,
   finishTime: Long,
+  input: String,
   output: String
 ) extends TaskHistory
