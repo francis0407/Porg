@@ -26,9 +26,49 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
     <script type="text/javascript">
       window.onload = function() {
+        bindConfigButton();
         loadOverViewData();
       }
+      function bindConfigButton() {
+        document.getElementById("upload-job-config").onchange = function() {
+          var reader = new FileReader();
+          var f = document.getElementById("upload-job-config").files[0];
+          reader.readAsText(f);
+          reader.onload = function() {
+            var json = JSON.parse(reader.result);
+            var keys = Array('name', 'jtype', 'host', 'dir', 'program', 'reduce_num');
+            var newHtml = '<table class="tab"> <tbody> ';
+            for (var i in keys) {
+              var key = keys[i];
+              newHtml += '<tr><th scope="row">'+key+'</th><td>'+json[key]+'</td></tr>';
+            }
+            var inputs = json['inputs'];
+            var len = inputs.length;
+            newHtml += '<tr><th scope="row" rowspan="' + len.toString() + '">inputs</th>';
+            newHtml += '<td>' + inputs[0] + '</td></tr>';
+            for (var i = 1; i < len; i++) {
+              newHtml += '<tr><td>' + inputs[i] + '</td></tr>';
+            }
+            newHtml += '</tbody></table>';
+            var parent = document.getElementById('job-preview');
+            parent.innerHTML = newHtml;
 
+            document.getElementById("button-submit").onclick = function() {
+              var ws = new WebSocket("ws://localhost:2411");
+              var msg = {
+                  status: "success",
+                  message: "",
+                  action: "register job",
+                  data: json
+              };
+              ws.onopen = function () {
+                ws.send(JSON.stringify(msg))
+              }
+            }
+
+          }
+        }
+      }
       function loadOverViewData() {
         fetch("api/getOverviewData")
         .then(res => res.json())
@@ -43,6 +83,11 @@
           document.getElementById("current_tasks").textContent = json['current_tasks'];
           document.getElementById("running_tasks").textContent = json['running_tasks'];
           document.getElementById("finished_tasks").textContent = json['finished_tasks'];
+          var finish_rate = 0;
+          if (json['current_tasks'] != 0) {
+            finish_rate = Math.floor(json['finished_tasks'] / json['current_tasks'] * 100);
+          }
+          document.getElementById("finish-rate").textContent = finish_rate.toString() + "%";
         })
       }
 
@@ -129,7 +174,7 @@
                   </ul>
                 </li> -->
                 <!-- Logout    -->
-                <li class="nav-item"><a href="login.html" class="nav-link logout"> <span class="d-none d-sm-inline">Submit New Job</span><i class="fa fa-sign-out"></i></a></li>
+                <li class="nav-item"><a class="nav-link logout" data-toggle="modal" data-target="#login" href=""> <span class="d-none d-sm-inline">Submit New Job</span><i class="fa fa-sign-out"></i></a></li>
               </ul>
             </div>
           </div>
@@ -149,8 +194,7 @@
           <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
           <ul class="list-unstyled">
                     <li class="active"><a href="index.html"> <i class="icon-home"></i>Porg Overview</a></li>
-                    <li><a href="workeroverview.html"> <i class="icon-grid"></i>Worker Overview</a></li>
-                    <!-- <li><a href="forms.html"> <i class="icon-padnote"></i>Forms </a></li> -->
+                    <!-- <li><a href="workeroverview.html"> <i class="icon-grid"></i>Worker Overview</a></li>
                     <li><a href="#workerDetails" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Worker Details</a>
                       <ul id="workerDetails" class="collapse list-unstyled ">
                         <li><a href="#">Worker1</a></li>
@@ -158,7 +202,7 @@
                         <li><a href="#">Worker3</a></li>
                       </ul>
                     </li>
-                    <li><a href="joboverview.html"> <i class="fa fa-bar-chart"></i>Job Overview</a></li>
+                    <li><a href="joboverview.html"> <i class="fa fa-bar-chart"></i>Job Overview</a></li> -->
                     <li><a href="#JobDetails" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Job Details</a>
                       <ul id="JobDetails" class="collapse list-unstyled ">
                       </ul>
@@ -273,7 +317,7 @@
                   <!-- Numbers-->
                   <div class="statistic d-flex align-items-center bg-white has-shadow">
                     <div class="icon bg-green"><i class="fa fa-line-chart"></i></div>
-                    <div class="text"><strong>10%</strong><br><small>Finish Rate</small></div>
+                    <div class="text"><strong id="finish-rate">10%</strong><br><small>Finish Rate</small></div>
                   </div>
                 </div>
               </div>
@@ -736,6 +780,37 @@
           </footer>
         </div>
       </div>
+    </div>
+    <div id="login" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h1 class="text-center">Submit New Job</h1>
+                </div>
+                <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">Upload Job Configuration</label>
+                                <input class="form-control" id="upload-job-config" type="file" placeholder="">
+                            </div>
+                            <div class="form-group" id="job-preview">
+                                
+                            </div>
+                            <!-- <div class="form-group">
+                                <label for="">密码</label>
+                                <input class="form-control" id="password-login" type="password" placeholder="">
+                            </div> -->
+                            <div class="text-right">
+                                <button class="btn btn-primary" id="button-submit" data-dismiss="modal">Submit</button>
+                                <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                            </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- JavaScript files-->
     <script src="vendor/jquery/jquery.min.js"></script>

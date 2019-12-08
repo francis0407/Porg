@@ -42,6 +42,7 @@
         fetch("api/getJobInfo/" + jid)
         .then(result => result.json())
         .then(json => {
+          console.log(json);
           for (var key in json) {
             var doc = document.getElementById(key);
             if (doc != null) {
@@ -49,7 +50,7 @@
             }
           }
           var task_table = document.getElementById("task_table");
-          for (var task in json['tasks_info']) {
+          for (var i in json['tasks_info']) {
             // <tr>
             //   <th scope="row">Job3-Task1</th>
             //   <td>12</td>
@@ -59,6 +60,7 @@
             //   <td>/home/francis/PorgFS/tmp/input/part-1</td>
             //   <td>/home/francis/PorgFS/tmp/output/1</td>
             // </tr>
+            var task = json['tasks_info'][i];
             task_table.innerHTML += 
               '<tr>' + '<th scope="row">' + task['task_id'] + '</th>' +
                 '<td>' + task['unique_id'] + '</td>' +
@@ -95,7 +97,7 @@
               </div>
               <!-- Navbar Menu -->
               <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
-                <li class="nav-item"><a href="login.html" class="nav-link logout"> <span class="d-none d-sm-inline">ShutDownPorgServer</span><i class="fa fa-sign-out"></i></a></li>
+                  <li class="nav-item"><a href="login.html" class="nav-link logout"> <span class="d-none d-sm-inline">Submit New Job</span><i class="fa fa-sign-out"></i></a></li>
               </ul>
             </div>
           </div>
@@ -115,8 +117,7 @@
           <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
           <ul class="list-unstyled">
                     <li><a href="index.html"> <i class="icon-home"></i>Porg Overview</a></li>
-                    <li><a href="workeroverview.html"> <i class="icon-grid"></i>Worker Overview</a></li>
-                    <!-- <li><a href="forms.html"> <i class="icon-padnote"></i>Forms </a></li> -->
+                    <!-- <li><a href="workeroverview.html"> <i class="icon-grid"></i>Worker Overview</a></li>
                     <li><a href="#workerDetails" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Worker Details</a>
                       <ul id="workerDetails" class="collapse list-unstyled ">
                         <li><a href="#">Worker1</a></li>
@@ -124,7 +125,7 @@
                         <li><a href="#">Worker3</a></li>
                       </ul>
                     </li>
-                    <li class="active"><a href="joboverview.html"> <i class="fa fa-bar-chart"></i>Job Overview</a></li>
+                    <li class="active"><a href="joboverview.html"> <i class="fa fa-bar-chart"></i>Job Overview</a></li> -->
                     <li><a href="#JobDetails" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Job Details</a>
                       <ul id="JobDetails" class="collapse list-unstyled ">
                       </ul>
@@ -183,7 +184,7 @@
                             </tr>
                             <tr>
                               <th scope="row">JobID</th>
-                              <td id="job_id">#12</td>>
+                              <td id="job_id">#12</td>
                             </tr>
                             <tr>
                               <th scope="row">JobType</th>
@@ -199,11 +200,11 @@
                             </tr>
                             <tr>
                               <th scope="row">StartTime</th>
-                              <td id="start_time">12:21</th>
+                              <td id="start_time">12:21</td>
                             </tr>
                             <tr>
                               <th scope="row">FinishTime</th>
-                              <td id="finish_time">13:11</th>
+                              <td id="finish_time">13:11</td>
                             </tr>
                             <tr>
                               <th scope="row">TasksNumber</th>
@@ -261,6 +262,7 @@
                             </tr>
                           </thead>
                           <tbody id="task_table">
+                            <!--
                             <tr>
                               <th scope="row">Job3-Task1</th>
                               <td>12</td>
@@ -270,6 +272,7 @@
                               <td>/home/francis/PorgFS/tmp/input/part-1</td>
                               <td>/home/francis/PorgFS/tmp/output/1</td>
                             </tr>
+                            -->
                           </tbody>
                         </table>
                       </div>

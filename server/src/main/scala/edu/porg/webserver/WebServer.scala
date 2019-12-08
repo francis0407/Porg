@@ -57,9 +57,15 @@ class WebServer extends HttpApp {
             },
             path("getAverageTaskFinishTime" / IntNumber) { jid =>
               val x = jid
-              val finishTime = Seq(10, 20, 10, 50, 30, 40, 40, 20, 70, 90, 100, 100, 100, 100, 100, 100)//JobHistory.getTaskFinishTime(jid)
-
+              val jobFinishTime = JobHistory.getTaskFinishTime(jid)
+              val finishTime = if (jobFinishTime == null)
+                  Seq(0,0,0,0)
+              else
+                  jobFinishTime.map(_.toInt)
+//              val finishTime = Seq[Long](10, 20, 10, 50, 30, 40, 40, 20, 70, 90, 100, 100, 100, 100, 100, 100)
               // TODO: move this to the front end.
+//              implicit val ordering: Ordering[Long] = math.Ordering.Long
+//              import Numeric.Implicits._
               val sortedTime =
                 if (finishTime.nonEmpty)
                   finishTime.sorted
@@ -125,7 +131,7 @@ class WebServer extends HttpApp {
                       |  "finish_time": "${new Date(t.finishTime).toLocaleString}",
                       |  "use_time"   : "${t.finishTime - t.startTime} ms",
                       |  "input_path" : "${t.input}",
-                      |  "output_path": "${t.output}",
+                      |  "output_path": "${t.output}"
                       |}
                     """.stripMargin
                   }).mkString(",")
@@ -137,7 +143,7 @@ class WebServer extends HttpApp {
                     |    "job_dir"        : "${moj.dir}",
                     |    "program_path"   : "${moj.program}",
                     |    "start_time"     : "${moj.startTime.toLocaleString}",
-                    |    "finish_time"    : "${moj.finishTime.toLocaleString}",
+                    |    "finish_time"    : "${if (moj.finishTime != null) moj.finishTime.toLocaleString else 0}",
                     |    "task_number"    : "${moj.inputs.size}",
                     |    "avg_finish_time": "$avg_finish_time ms",
                     |    "tasks_info"     : [$taskInfos]

@@ -1,14 +1,14 @@
 {
     "name": "flatMapExample",
     "jtype": "maponly",
-    "host": "http://219.228.148.81:4049/upload",
+    "host": "http://localhost:4049/upload",
     "dir": "flatMapJob/output",
-    "program": "http://219.228.148.81:4049/download?url=flatMapJob/flatMapExample.js",
+    "program": "http://localhost:4049/download?url=flatMapJob/flatMapExample.js",
     "inputs": [
-        "http://219.228.148.81:4049/download?url=flatMapJob/input/part-1",
-        "http://219.228.148.81:4049/download?url=flatMapJob/input/part-2",
-        "http://219.228.148.81:4049/download?url=flatMapJob/input/part-3",
-        "http://219.228.148.81:4049/download?url=flatMapJob/input/part-4"
+        "http://localhost:4049/download?url=flatMapJob/input/part-1",
+        "http://localhost:4049/download?url=flatMapJob/input/part-2",
+        "http://localhost:4049/download?url=flatMapJob/input/part-3",
+        "http://localhost:4049/download?url=flatMapJob/input/part-4"
     ],
     "reduce_num": 0
 }

@@ -4,6 +4,7 @@
 var express = require('express')
 var bodyParser = require('body-parser');//解析,用req.body获取post参数
 var fs = require("fs")
+var path = require('path');
 
 //2. 创建express服务器
 var server = express();
@@ -12,7 +13,7 @@ server.use(bodyParser.urlencoded({extended: false}));
 
 
 var conf = {
-    root : "/home/francis/Git/porg/example/"
+    root : "../example/"
 }
 
 server.all('*', function(req, res, next) {
@@ -20,13 +21,18 @@ server.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     res.header("X-Powered-By",' 3.2.1')
-    res.header("Content-Type", "application/json;charset=utf-8");
+    // res.header("Content-Type", "application/json;charset=utf-8");
     res.setHeader("Access-Control-Allow-Headers", "content-type, user-agent");
     next();
 });
 //3. 访问服务器(get或者post)
 //参数一: 请求根路径
 //3.1 get请求
+// server.get('/worker.html', function (request, res) {
+//     res.
+// });
+server.use('/static', express.static("../worker/"))
+
 server.get('/download', function (request, res) {
     // console.log(request)
     var url = request.query.url;
@@ -44,6 +50,7 @@ server.post('/upload', function (request, response) {
     var target = request.body.output;
     var content = request.body.content;
     fs.writeFileSync(conf.root + target, content);
+    response.header("Content-Type", "application/json;charset=utf-8");
     response.send('{"status":"success"}');
 });
 

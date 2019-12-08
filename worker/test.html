@@ -5,27 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <script src="porgclient.js"></script>
     <script>
-    
-    function testPromise() {
-        var x = genPromise("ok1", "");
-        x
-        .then(function(){
-            
-        });
-    }
-
-    function genPromise(input, error) {
-        return new Promise(function(resolve, reject){
-            if (error != "")
-                throw error;
-            resolve(input);
-        });
-    }
-
+        porg.run("ws://localhost:2411");
     </script>
 </head>
 <body>
-    
+    <h1>
+        Porg Worker
+    </h1>
 </body>
 </html>

@@ -77,6 +77,7 @@
 
     function rejectionPromise(msg) {
         return new Promise(function (resolve, reject) {
+            console.log("reject: " + msg);
             reject(msg);
         });
     }
@@ -86,23 +87,23 @@
         var downloadInput = ajaxGet(taskArg["input"][0]); // download input
         Promise.all([downloadProgram, downloadInput])
             .then(function(values) {                                // execute program
-                return new Promise(function (resolve, reject) {
-                    console.log(values[0]);
-                    console.log(values[1]);
-                    var input = values[1];
-                    try {
-                        var program = eval(values[0]);
-                        // var results = program(input);   // TODO: program args
-                        // console.log(results);
-                        // resolve(results);
-                        return program(input);
-                    } catch (ex) {
-                        // reject(ex);
-                        return new Promise((rs, rj) => rj(ex));
-                    }
-                });
+                console.log(values[0]);
+                console.log(values[1]);
+                var input = values[1];
+                try {
+                    var program = eval(values[0]);
+                    // var results = program(input);   // TODO: program args
+                    // console.log(results);
+                    // resolve(results);
+                    // Program must return a Promise.
+                    return program(input);
+                } catch (ex) {
+                    // reject(ex);
+                    return new Promise((rs, rj) => rj(ex));
+                }
             }, rejectionPromise)
             .then(function(results) {
+                console.log(taskArg["output"]);
                 return ajaxPost(jobInfo["host"], {output: taskArg["output"], content: results});
             }, rejectionPromise)
             .then(function(msg){

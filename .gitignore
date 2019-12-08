@@ -2,3 +2,6 @@ server/target
 server/.idea
 doc.md
 fsserver/node_modules
+example/*/input
+example/*/output
+jyf_job/*
