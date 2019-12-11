@@ -8,8 +8,8 @@ var path = require('path');
 
 //2. 创建express服务器
 var server = express();
-server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({extended: false}));
+server.use(bodyParser.json({limit:'1000000kb'})); 
+server.use(bodyParser.urlencoded({limit:'1000000kb',extended:true}));
 
 
 var conf = {

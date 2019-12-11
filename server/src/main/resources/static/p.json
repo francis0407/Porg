@@ -1,0 +1,49 @@
+{
+    "job_name": "flatMapExample",
+    "job_id": "3",
+    "job_type": "MapOnlyJob",
+    "job_dir": "flatMapJob/output",
+    "program_path": "http://localhost:4049/download?url=flatMapJob/flatMapExample.js",
+    "start_time": "2019-11-12 10:09:49",
+    "finish_time": "2019-11-12 10:10:01",
+    "task_number": "4",
+    "avg_finish_time": "5974.25 ms",
+    "tasks_info": [
+        {
+            "task_id": "job3-task1",
+            "unique_id": "12",
+            "start_time": "2019-11-12 10:09:49",
+            "finish_time": "2019-11-12 10:09:55",
+            "use_time": "5959 ms",
+            "input_path": "http://localhost:4049/download?url=flatMapJob/input/part-2",
+            "output_path": "flatMapJob/output/1",
+        },
+        {
+            "task_id": "job3-task0",
+            "unique_id": "11",
+            "start_time": "2019-11-12 10:09:49",
+            "finish_time": "2019-11-12 10:09:55",
+            "use_time": "6014 ms",
+            "input_path": "http://localhost:4049/download?url=flatMapJob/input/part-1",
+            "output_path": "flatMapJob/output/0",
+        },
+        {
+            "task_id": "job3-task3",
+            "unique_id": "14",
+            "start_time": "2019-11-12 10:09:55",
+            "finish_time": "2019-11-12 10:10:01",
+            "use_time": "5929 ms",
+            "input_path": "http://localhost:4049/download?url=flatMapJob/input/part-4",
+            "output_path": "flatMapJob/output/3",
+        },
+        {
+            "task_id": "job3-task2",
+            "unique_id": "13",
+            "start_time": "2019-11-12 10:09:55",
+            "finish_time": "2019-11-12 10:10:01",
+            "use_time": "5995 ms",
+            "input_path": "http://localhost:4049/download?url=flatMapJob/input/part-3",
+            "output_path": "flatMapJob/output/2",
+        }
+    ]
+}

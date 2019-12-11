@@ -44,6 +44,7 @@
             }
             var inputs = json['inputs'];
             var len = inputs.length;
+			if (len > 10) len = 10;
             newHtml += '<tr><th scope="row" rowspan="' + len.toString() + '">inputs</th>';
             newHtml += '<td>' + inputs[0] + '</td></tr>';
             for (var i = 1; i < len; i++) {
