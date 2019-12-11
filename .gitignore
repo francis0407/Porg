@@ -5,3 +5,4 @@ fsserver/node_modules
 example/*/input
 example/*/output
 jyf_job/*
+worker/node_modules
